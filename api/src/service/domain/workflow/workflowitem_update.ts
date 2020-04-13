@@ -16,8 +16,23 @@ import * as Subproject from "./subproject";
 import * as Workflowitem from "./workflowitem";
 import * as WorkflowitemEventSourcing from "./workflowitem_eventsourcing";
 import * as WorkflowitemUpdated from "./workflowitem_updated";
+import * as WorkflowitemDocumentUploaded from "./workflowitem_document_uploaded";
+import { UploadedDocument, hashDocument } from "./document";
 
-export type RequestData = WorkflowitemUpdated.Modification;
+export interface RequestData {
+  displayName?: string;
+  description?: string;
+  amount?: string;
+  currency?: string;
+  amountType?: "N/A" | "disbursed" | "allocated";
+  exchangeRate?: string;
+  billingDate?: string;
+  dueDate?: string;
+  documents?: UploadedDocument[];
+  additionalData?: object;
+}
+
+export type EventData = WorkflowitemUpdated.Modification;
 export const requestDataSchema = WorkflowitemUpdated.modificationSchema;
 
 interface Repository {
@@ -39,13 +54,21 @@ export async function updateWorkflowitem(
     return new NotFound(ctx, "workflowitem", workflowitemId);
   }
 
+  const modificationWithDocumentHashes: EventData = {
+    ...modification,
+    documents:
+      modification.documents === undefined
+        ? undefined
+        : await Promise.all(modification.documents.map(hashDocument)),
+  };
+
   const newEvent = WorkflowitemUpdated.createEvent(
     ctx.source,
     issuer.id,
     projectId,
     subprojectId,
     workflowitemId,
-    modification,
+    modificationWithDocumentHashes,
   );
   if (Result.isErr(newEvent)) {
     return new VError(newEvent, "cannot update workflowitem");
@@ -76,8 +99,8 @@ export async function updateWorkflowitem(
     : [];
   const notifications = recipients
     // The issuer doesn't receive a notification:
-    .filter(userId => userId !== issuer.id)
-    .map(recipient =>
+    .filter((userId) => userId !== issuer.id)
+    .map((recipient) =>
       NotificationCreated.createEvent(
         ctx.source,
         issuer.id,
@@ -89,7 +112,37 @@ export async function updateWorkflowitem(
       ),
     );
 
-  return { newEvents: [newEvent, ...notifications], workflowitem: result };
+  // handle new documents
+  const newDocumentUploadedEvents: BusinessEvent[] = [];
+  if (newEvent.update.documents && newEvent.update.documents.length > 0) {
+    const { documents } = newEvent.update;
+    // TODO: Validate documents
+    newDocumentUploadedEvents.concat(
+      documents.map((d, i) => {
+        const docToUpload: UploadedDocument = {
+          base64: modification.documents ? modification.documents[i].base64 : "",
+          fileName: modification.documents
+            ? modification.documents[i].fileName
+            : "unknown-file.pdf",
+          id: d.documentId,
+        };
+
+        return WorkflowitemDocumentUploaded.createEvent(
+          ctx.source,
+          issuer.id,
+          projectId,
+          subprojectId,
+          workflowitemId,
+          docToUpload,
+        );
+      }),
+    );
+  }
+
+  return {
+    newEvents: [newEvent, ...newDocumentUploadedEvents, ...notifications],
+    workflowitem: result,
+  };
 }
 
 function isEqualIgnoringLog(

@@ -110,7 +110,7 @@ interface ExposedWorkflowitem {
     currency: string;
     billingDate: string;
     exchangeRate: string;
-    documents: [{ id: string; hash: string }];
+    documents: [{ id: string; hash: string; documentId: string }];
     additionalData: object;
   };
 }
@@ -156,7 +156,7 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
     service
       .listWorkflowitems(ctx, user, projectId, subprojectId)
       .then((workflowitems: Workflowitem.ScrubbedWorkflowitem[]) => {
-        return workflowitems.map(workflowitem => {
+        return workflowitems.map((workflowitem) => {
           return {
             allowedIntents: workflowitem.isRedacted
               ? []
@@ -189,7 +189,7 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
         };
         reply.status(code).send(body);
       })
-      .catch(err => {
+      .catch((err) => {
         const { code, body } = toHttpError(err);
         reply.status(code).send(body);
       });

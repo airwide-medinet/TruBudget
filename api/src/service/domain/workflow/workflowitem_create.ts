@@ -17,6 +17,7 @@ import * as Project from "./project";
 import * as Subproject from "./subproject";
 import * as Workflowitem from "./workflowitem";
 import * as WorkflowitemCreated from "./workflowitem_created";
+import * as WorkflowitemDocumentUploaded from "./workflowitem_document_uploaded";
 
 export interface RequestData {
   projectId: Project.Id;
@@ -119,7 +120,7 @@ export async function createWorkflowitem(
   if (creatingUser.id !== "root") {
     const authorizationResult = Result.map(
       await repository.getSubproject(reqData.projectId, reqData.subprojectId),
-      subproject => {
+      (subproject) => {
         const intent = "subproject.createWorkflowitem";
         if (!Subproject.permits(subproject, creatingUser, [intent])) {
           return new NotAuthorized({ ctx, userId: creatingUser.id, intent, target: subproject });
@@ -146,7 +147,26 @@ export async function createWorkflowitem(
     return { newEvents: [], errors: [new InvalidCommand(ctx, workflowitemCreated, [result])] };
   }
 
-  return { newEvents: [workflowitemCreated], errors: [] };
+  // handle new documents
+  // TODO: Validate documents
+  const documentUploadedEvents: BusinessEvent[] = documents.map((d, i) => {
+    const docToUpload: UploadedDocument = {
+      base64: reqData.documents ? reqData.documents[i].base64 : "",
+      fileName: reqData.documents ? reqData.documents[i].fileName : "unknown-file.pdf",
+      id: d.documentId,
+    };
+
+    return WorkflowitemDocumentUploaded.createEvent(
+      ctx.source,
+      publisher,
+      reqData.projectId,
+      reqData.subprojectId,
+      workflowitemId,
+      docToUpload,
+    );
+  });
+
+  return { newEvents: [workflowitemCreated, ...documentUploadedEvents], errors: [] };
 }
 
 function newDefaultPermissionsFor(userId: string): Permissions {

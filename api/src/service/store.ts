@@ -5,6 +5,13 @@ import logger from "../lib/logger";
 import { ConnToken } from "./conn";
 import { BusinessEvent } from "./domain/business_event";
 
+interface PublishableData {
+  stream: String;
+  keys: String[];
+  event: BusinessEvent;
+  offchain?: Boolean;
+}
+
 export async function store(conn: ConnToken, ctx: Ctx, event: BusinessEvent): Promise<void> {
   switch (event.type) {
     case "global_permission_granted":
@@ -98,6 +105,10 @@ export async function store(conn: ConnToken, ctx: Ctx, event: BusinessEvent): Pr
         event,
       });
 
+    case "workflowitem_document_uploaded":
+      // TODO: store to chain
+      break;
+
     case "notification_created":
       await ensureStreamExists(conn, ctx, "notifications", "notifications");
       return writeTo(conn, ctx, { stream: "notifications", keys: [event.recipient], event });
@@ -117,7 +128,7 @@ async function ensureStreamExists(conn: ConnToken, ctx: Ctx, name: string, kind:
     .getRpcClient()
     .invoke("create", "stream", name, isPublic, customFields)
     .then(() => logger.debug({ ctx }, `New ${kind} stream created: ${name}`))
-    .catch(err => {
+    .catch((err) => {
       if (err && err.code === -705) {
         // Code -705 means the stream already exists - that's fine.
         return;
@@ -126,11 +137,23 @@ async function ensureStreamExists(conn: ConnToken, ctx: Ctx, name: string, kind:
     });
 }
 
-async function writeTo(
-  conn: ConnToken,
-  ctx: Ctx,
-  { stream, keys, event }: { stream: string; keys: string[]; event: BusinessEvent },
-) {
+async function multiWriteTo(conn: ConnToken, ctx: Ctx, items: PublishableData[]) {
+  await conn.multichainClient.getRpcClient().invoke(
+    "publishmulti",
+    "defaultStream",
+    items.map((i) => {
+      logger.debug({ ctx }, `Publishing ${i.event.type} to ${i.stream}/${i.keys}`);
+      return {
+        keys: i.keys,
+        data: i.event,
+        for: i.stream,
+        options: i.offchain ? "offchain" : undefined,
+      };
+    }),
+  );
+}
+
+async function writeTo(conn: ConnToken, ctx: Ctx, { stream, keys, event }: PublishableData) {
   const streamitem = { json: event };
   logger.debug({ ctx }, `Publishing ${event.type} to ${stream}/${keys}`);
   // TODO publishfrom address

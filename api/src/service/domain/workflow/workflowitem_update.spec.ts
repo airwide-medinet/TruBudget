@@ -8,6 +8,7 @@ import { NotFound } from "../errors/not_found";
 import { ServiceUser } from "../organization/service_user";
 import { Workflowitem } from "./workflowitem";
 import { updateWorkflowitem } from "./workflowitem_update";
+import { hashDocument, StoredDocument } from "./document";
 
 const ctx: Ctx = { requestId: "", source: "test" };
 const root: ServiceUser = { id: "root", groups: [] };
@@ -27,12 +28,17 @@ const baseWorkflowitem: Workflowitem = {
   description: "dummy",
   amountType: "N/A",
   documents: [],
-  permissions: { "workflowitem.update": [alice, bob, charlie].map(x => x.id) },
+  permissions: { "workflowitem.update": [alice, bob, charlie].map((x) => x.id) },
   log: [],
   additionalData: {},
 };
+
+const stripOutDocumentId = (docs: StoredDocument[]) => {
+  return docs.map((d) => ({ id: d.id, hash: d.hash }));
+};
+
 const baseRepository = {
-  getUsersForIdentity: async identity => {
+  getUsersForIdentity: async (identity) => {
     if (identity === "alice") return ["alice"];
     if (identity === "bob") return ["bob"];
     if (identity === "charlie") return ["charlie"];
@@ -55,7 +61,7 @@ describe("update workflowitem: authorization", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
           permissions: {},
         }),
@@ -75,7 +81,7 @@ describe("update workflowitem: authorization", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
           permissions: {},
         }),
@@ -97,7 +103,7 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
         }),
       },
@@ -125,7 +131,7 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
           displayName: "Foo",
           description: "A description.",
@@ -154,7 +160,7 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
           displayName: "Foo",
           description: "A description.",
@@ -183,7 +189,7 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
           displayName: "Foo",
           description: "A description.",
@@ -209,7 +215,7 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
           status: "closed",
           billingDate: "2019-03-20T10:33:18.856Z",
@@ -225,7 +231,7 @@ describe("update workflowitem: how modifications are applied", () => {
 
   it(
     "A workflowitem's amount, currency and exchangeRate fields " +
-    'are cleared if the amountType is set to "N/A" by the update',
+      'are cleared if the amountType is set to "N/A" by the update',
     async () => {
       const modification = {
         amountType: "N/A" as "N/A",
@@ -239,7 +245,7 @@ describe("update workflowitem: how modifications are applied", () => {
         modification,
         {
           ...baseRepository,
-          getWorkflowitem: async _workflowitemId => ({
+          getWorkflowitem: async (_workflowitemId) => ({
             ...baseWorkflowitem,
             amountType: "disbursed",
             amount: "123",
@@ -262,7 +268,7 @@ describe("update workflowitem: how modifications are applied", () => {
 
   it(
     "Updates to a workflowitem's amount, currency and exchangeRate fields " +
-    'are forbidden if the amountType is already set to "N/A"',
+      'are forbidden if the amountType is already set to "N/A"',
     async () => {
       const modification = {
         amount: "123",
@@ -278,7 +284,7 @@ describe("update workflowitem: how modifications are applied", () => {
         modification,
         {
           ...baseRepository,
-          getWorkflowitem: async _workflowitemId => ({
+          getWorkflowitem: async (_workflowitemId) => ({
             ...baseWorkflowitem,
             amountType: "N/A",
           }),
@@ -302,22 +308,28 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
-          documents: [{ id: "a", hash: "hashA" }],
+          documents: [{ id: "a", hash: "hashA", documentId: "abc" }],
         }),
       },
     );
 
     assert.isTrue(Result.isOk(result), (result as Error).message);
     const { workflowitem } = Result.unwrap(result);
-    assert.deepEqual(workflowitem.documents, [{ id: "a", hash: "hashA" }]);
+    assert.deepEqual(workflowitem.documents, [{ id: "a", hash: "hashA", documentId: "abc" }]);
   });
 
   it("An update to documents adds new documents", async () => {
     const modification = {
-      documents: [{ id: "B", hash: "hash for B" }, { id: "C", hash: "hash for C" }],
+      documents: [
+        { id: "B", base64: "abc", fileName: "test.pdf" },
+        { id: "C", base64: "cde", fileName: "test.pdf" },
+      ],
     };
+
+    const expectedHashForB = (await hashDocument(modification.documents[0])).hash;
+    const expectedHashForC = (await hashDocument(modification.documents[1])).hash;
     const result = await updateWorkflowitem(
       ctx,
       alice,
@@ -327,25 +339,28 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
-          documents: [{ id: "A", hash: "hash for A" }],
+          documents: [{ id: "A", hash: "hash for A", documentId: "abc" }],
         }),
       },
     );
 
     assert.isTrue(Result.isOk(result), (result as Error).message);
     const { workflowitem } = Result.unwrap(result);
-    assert.sameDeepMembers(workflowitem.documents, [
-      { id: "A", hash: "hash for A" },
-      { id: "B", hash: "hash for B" },
-      { id: "C", hash: "hash for C" },
-    ]);
+    assert.sameDeepMembers(
+      stripOutDocumentId(workflowitem.documents),
+      stripOutDocumentId([
+        { id: "A", hash: "hash for A", documentId: "abc1" },
+        { id: "B", hash: expectedHashForB, documentId: "abc2" },
+        { id: "C", hash: expectedHashForC, documentId: "abc3" },
+      ]),
+    );
   });
 
   it("An update to existing documents is ignored if the update doesn't change the documents' hashes", async () => {
     const modification = {
-      documents: [{ id: "A", hash: "old hash for A" }],
+      documents: [{ id: "A", base64: "abc", fileName: "test.pdf" }],
     };
     const result = await updateWorkflowitem(
       ctx,
@@ -356,9 +371,9 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
-          documents: [{ id: "A", hash: "old hash for A" }],
+          documents: [{ id: "A", hash: "old hash for A", documentId: "abc" }],
         }),
       },
     );
@@ -366,13 +381,13 @@ describe("update workflowitem: how modifications are applied", () => {
     assert.isTrue(Result.isOk(result), (result as Error).message);
     const { workflowitem } = Result.unwrap(result);
     assert.sameDeepMembers(workflowitem.documents, [
-      { id: "A", hash: "old hash for A" },
+      { id: "A", hash: "old hash for A", documentId: "abc" },
     ]);
   });
 
   it("An update to existing documents fails if the update would change the documents' hashes", async () => {
     const modification = {
-      documents: [{ id: "A", hash: "new hash for A" }],
+      documents: [{ id: "A", base64: "", fileName: "test.pdf" }],
     };
     const result = await updateWorkflowitem(
       ctx,
@@ -383,9 +398,9 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
-          documents: [{ id: "A", hash: "old hash for A" }],
+          documents: [{ id: "A", hash: "old hash for A", documentId: "abc" }],
         }),
       },
     );
@@ -409,7 +424,7 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
           additionalData: {
             a: "old value",
@@ -439,7 +454,7 @@ describe("update workflowitem: how modifications are applied", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => new Error("some error"),
+        getWorkflowitem: async (_workflowitemId) => new Error("some error"),
       },
     );
 
@@ -463,7 +478,7 @@ describe("update workflowitem: notifications", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
           description: "A description.",
           assignee: bob.id,
@@ -475,7 +490,9 @@ describe("update workflowitem: notifications", () => {
     const { newEvents } = Result.unwrap(result);
 
     assert.isTrue(
-      newEvents.some(event => event.type === "notification_created" && event.recipient === bob.id),
+      newEvents.some(
+        (event) => event.type === "notification_created" && event.recipient === bob.id,
+      ),
     );
   });
 
@@ -492,7 +509,7 @@ describe("update workflowitem: notifications", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
           description: "A description.",
           assignee: undefined,
@@ -504,7 +521,9 @@ describe("update workflowitem: notifications", () => {
     const { newEvents } = Result.unwrap(result);
 
     assert.isFalse(
-      newEvents.some(event => event.type === "notification_created" && event.recipient === bob.id),
+      newEvents.some(
+        (event) => event.type === "notification_created" && event.recipient === bob.id,
+      ),
     );
   });
 
@@ -520,7 +539,7 @@ describe("update workflowitem: notifications", () => {
       modification,
       {
         ...baseRepository,
-        getWorkflowitem: async _workflowitemId => ({
+        getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
         }),
       },
@@ -536,7 +555,7 @@ describe("update workflowitem: notifications", () => {
 
   it(
     "When a user updates a workflowitem that is assigned to a group, " +
-    "each member, except for the user that invoked the update, receives a notification",
+      "each member, except for the user that invoked the update, receives a notification",
     async () => {
       const modification = {
         description: "New description.",
@@ -550,7 +569,7 @@ describe("update workflowitem: notifications", () => {
         modification,
         {
           ...baseRepository,
-          getWorkflowitem: async _workflowitemId => ({
+          getWorkflowitem: async (_workflowitemId) => ({
             ...baseWorkflowitem,
             description: "A description.",
             assignee: "alice_and_bob_and_charlie",
@@ -564,7 +583,7 @@ describe("update workflowitem: notifications", () => {
       // A notification has been issued to both Bob and Charlie, but not to Alice, as she
       // is the user who has updated the workflowitem:
       function isNotificationFor(userId: string): (e: BusinessEvent) => boolean {
-        return event => event.type === "notification_created" && event.recipient === userId;
+        return (event) => event.type === "notification_created" && event.recipient === userId;
       }
 
       assert.isFalse(newEvents.some(isNotificationFor("alice")));
