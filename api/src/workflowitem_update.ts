@@ -96,7 +96,7 @@ function mkSwaggerSchema(server: FastifyInstance) {
                   type: "object",
                   properties: {
                     id: { type: "string", example: "myId" },
-                    fileName: { tyüe: "string", example: "printout.pdf" },
+                    fileName: { type: "string", example: "printout.pdf" },
                     base64: {
                       type: "string",
                       example: "aGVsbG8gdGhpcyBpcyBhIHRlc3QgZm9yIHRoZSBhcGkgZG9j",

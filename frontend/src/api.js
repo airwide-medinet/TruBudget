@@ -388,6 +388,34 @@ class Api {
       : `/email/user.getEmailAddress?id=${id}`;
     return instance.get(path);
   };
+
+  downloadDocument = (projectId, subprojectId, workflowitemId, documentId) =>
+    instance
+      .get(
+        `/workflowitem.downloadDocument?projectId=${projectId}&subprojectId=${subprojectId}&workflowitemId=${workflowitemId}&documentId=${documentId}`,
+        { responseType: "blob" }
+      )
+      .then(response => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        const disposition = response.headers["content-disposition"];
+        let filename;
+        if (disposition && disposition.indexOf("attachment") !== -1) {
+          const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+          const matches = filenameRegex.exec(disposition);
+          if (matches != null && matches[1]) {
+            filename = matches[1].replace(/['"]/g, "");
+          }
+        }
+
+        link.download = filename;
+        document.body.appendChild(link);
+
+        link.click();
+        link.remove();
+        return Promise.resolve({ data: {} });
+      });
 }
 
 export default Api;

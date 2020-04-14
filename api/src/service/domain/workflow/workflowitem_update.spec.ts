@@ -362,6 +362,8 @@ describe("update workflowitem: how modifications are applied", () => {
     const modification = {
       documents: [{ id: "A", base64: "abc", fileName: "test.pdf" }],
     };
+
+    const hashForDocumentA = (await hashDocument(modification.documents[0])).hash;
     const result = await updateWorkflowitem(
       ctx,
       alice,
@@ -373,16 +375,17 @@ describe("update workflowitem: how modifications are applied", () => {
         ...baseRepository,
         getWorkflowitem: async (_workflowitemId) => ({
           ...baseWorkflowitem,
-          documents: [{ id: "A", hash: "old hash for A", documentId: "abc" }],
+          documents: [{ id: "A", hash: hashForDocumentA, documentId: "abc" }],
         }),
       },
     );
 
     assert.isTrue(Result.isOk(result), (result as Error).message);
     const { workflowitem } = Result.unwrap(result);
-    assert.sameDeepMembers(workflowitem.documents, [
-      { id: "A", hash: "old hash for A", documentId: "abc" },
-    ]);
+    assert.sameDeepMembers(
+      stripOutDocumentId(workflowitem.documents),
+      stripOutDocumentId([{ id: "A", hash: hashForDocumentA, documentId: "abc" }]),
+    );
   });
 
   it("An update to existing documents fails if the update would change the documents' hashes", async () => {

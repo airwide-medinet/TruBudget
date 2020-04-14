@@ -86,6 +86,7 @@ import * as WorkflowitemPermissionsListService from "./service/workflowitem_perm
 import * as WorkflowitemTraceEventsService from "./service/workflowitem_trace_events";
 import * as WorkflowitemUpdateService from "./service/workflowitem_update";
 import * as WorkflowitemsReorderService from "./service/workflowitems_reorder";
+import * as WorkflowitemDocumentDownloadService from "./service/workflowitem_document_download";
 import * as SubprojectAssignAPI from "./subproject_assign";
 import * as SubprojectProjectedBudgetDeleteAPI from "./subproject_budget_delete_projected";
 import * as SubprojectProjectedBudgetUpdateAPI from "./subproject_budget_update_projected";
@@ -117,6 +118,7 @@ import * as WorkflowitemUpdateAPI from "./workflowitem_update";
 import * as WorkflowitemValidateDocumentAPI from "./workflowitem_validate_document";
 import * as WorkflowitemViewHistoryAPI from "./workflowitem_view_history";
 import * as WorkflowitemsReorderAPI from "./workflowitems_reorder";
+import * as WorkflowitemsDocumentDownloadAPI from "./workflowitem_download_document";
 
 const URL_PREFIX = "/api";
 
@@ -180,7 +182,7 @@ const server = createBasicApp(jwtSecret, URL_PREFIX, port, SWAGGER_BASEPATH, env
  */
 
 // Enable useful traces of unhandled-promise warnings:
-process.on("unhandledRejection", err => {
+process.on("unhandledRejection", (err) => {
   logger.fatal({ err }, "UNHANDLED PROMISE REJECTION");
   process.exit(1);
 });
@@ -189,13 +191,13 @@ function registerSelf(): Promise<boolean> {
   return multichainClient
     .getRpcClient()
     .invoke("listaddresses", "*", false, 1, 0)
-    .then(addressInfos =>
+    .then((addressInfos) =>
       addressInfos
-        .filter(info => info.ismine)
-        .map(info => info.address)
-        .find(_ => true),
+        .filter((info) => info.ismine)
+        .map((info) => info.address)
+        .find((_) => true),
     )
-    .then(address => {
+    .then((address) => {
       const req = {
         body: {
           data: {
@@ -706,11 +708,24 @@ WorkflowitemValidateDocumentAPI.addHttpHandler(server, URL_PREFIX, {
     DocumentValidationService.isSameDocument(documentBase64, expectedSHA256),
 });
 
+WorkflowitemsDocumentDownloadAPI.addHttpHandler(server, URL_PREFIX, {
+  getDocument: (ctx, user, projectId, subprojectId, workflowitemId, documentId) =>
+    WorkflowitemDocumentDownloadService.getDocuments(
+      db,
+      ctx,
+      user,
+      projectId,
+      subprojectId,
+      workflowitemId,
+      documentId,
+    ),
+});
+
 /*
  * Run the server.
  */
 
-server.listen(port, "0.0.0.0", async err => {
+server.listen(port, "0.0.0.0", async (err) => {
   if (err) {
     logger.fatal({ err }, "Connection could not be established. Aborting.");
     console.trace();

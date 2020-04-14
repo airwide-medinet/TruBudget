@@ -111,7 +111,15 @@ function Overview({ users, workflowitem }) {
   );
 }
 
-function Documents({ documents, validateDocument, validatedDocuments, showWorkflowDetails }) {
+function Documents({
+  documents,
+  validateDocument,
+  validatedDocuments,
+  showWorkflowDetails,
+  projectId,
+  subprojectId,
+  workflowitemId
+}) {
   return (
     <DocumentOverviewContainer
       id={strings.workflow.workflow_documents}
@@ -119,6 +127,9 @@ function Documents({ documents, validateDocument, validatedDocuments, showWorkfl
       validateDocument={validateDocument}
       validatedDocuments={validatedDocuments}
       validationActive={showWorkflowDetails}
+      projectId={projectId}
+      subprojectId={subprojectId}
+      workflowitemId={workflowitemId}
     />
   );
 }
@@ -136,14 +147,11 @@ function WorkflowDetails({
   subProjectId: subprojectId
 }) {
   const [selectedTab, setSelectedTab] = useState(0);
-  useEffect(
-    () => {
-      if (!showWorkflowDetails) {
-        setSelectedTab(0);
-      }
-    },
-    [showWorkflowDetails]
-  );
+  useEffect(() => {
+    if (!showWorkflowDetails) {
+      setSelectedTab(0);
+    }
+  }, [showWorkflowDetails]);
 
   const workflowitem = getWorkflowItem(workflowItems, showWorkflowDetails, showDetailsItemId);
 
@@ -153,7 +161,15 @@ function WorkflowDetails({
   } else if (selectedTab === 1) {
     content = (
       <Documents
-        {...{ documents: workflowitem.data.documents, showWorkflowDetails, validateDocument, validatedDocuments }}
+        {...{
+          documents: workflowitem.data.documents,
+          showWorkflowDetails,
+          validateDocument,
+          validatedDocuments,
+          projectId,
+          subprojectId,
+          workflowitemId: workflowitem.data.id
+        }}
       />
     );
   } else if (selectedTab === 2) {

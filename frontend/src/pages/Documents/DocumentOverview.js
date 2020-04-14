@@ -8,6 +8,8 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
+import DownloadIcon from "@material-ui/icons/GetApp";
+import ValidationIcon from "@material-ui/icons/FindInPage";
 
 import _isUndefined from "lodash/isUndefined";
 import _isEmpty from "lodash/isEmpty";
@@ -29,6 +31,13 @@ const styles = {
   },
   hashButton: {
     display: "flex"
+  },
+  actionContainer: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "flex-start"
   }
 };
 
@@ -69,6 +78,7 @@ class DocumentOverview extends Component {
 
   generateUploadIcon = (hash, validated, id) => (
     <Button {...this.getPropsForUploadButton(validated)}>
+      <ValidationIcon />
       {this.getValidationText(validated)}
       <Input
         id="docvalidation"
@@ -97,7 +107,14 @@ class DocumentOverview extends Component {
     </div>
   );
 
-  generateDocumentList = (documents, validationActive = false, validatedDocuments = {}) => {
+  generateDocumentList = (
+    workflowitemId,
+    projectId,
+    subprojectId,
+    documents,
+    validationActive = false,
+    validatedDocuments = {}
+  ) => {
     const header = this.generateDocumentListHeader(validationActive);
     const rows = documents.map((document, index) => {
       let validated = undefined;
@@ -118,7 +135,22 @@ class DocumentOverview extends Component {
           {validationActive ? <TableCell>{this.generateHashIcon(hash)}</TableCell> : null}
           {validationActive ? (
             <TableCell style={{ textAlign: "center", paddingLeft: "0px" }}>
-              {this.generateUploadIcon(hash, validated, id)}
+              <div style={styles.actionContainer}>
+                {this.generateUploadIcon(hash, validated, id)}
+                {document.documentId ? (
+                  <Button
+                    color="default"
+                    aria-label="upload picture"
+                    component="span"
+                    onClick={() =>
+                      this.props.downloadDocument(projectId, subprojectId, workflowitemId, document.documentId)
+                    }
+                  >
+                    <DownloadIcon />
+                    Download
+                  </Button>
+                ) : null}
+              </div>
             </TableCell>
           ) : null}
         </TableRow>
@@ -164,12 +196,29 @@ class DocumentOverview extends Component {
   );
 
   render = () => {
-    const { documents, validationActive, validatedDocuments, loadingVisible } = this.props;
+    const {
+      documents,
+      validationActive,
+      validatedDocuments,
+      loadingVisible,
+      workflowitemId,
+      projectId,
+      subprojectId,
+      downloadDocument
+    } = this.props;
     return (
       <Table style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
         {_isEmpty(documents)
           ? this.generateEmptyList()
-          : this.generateDocumentList(documents, validationActive, validatedDocuments, loadingVisible)}
+          : this.generateDocumentList(
+              workflowitemId,
+              projectId,
+              subprojectId,
+              documents,
+              validationActive,
+              validatedDocuments,
+              loadingVisible
+            )}
       </Table>
     );
   };

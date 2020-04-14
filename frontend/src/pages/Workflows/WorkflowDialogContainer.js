@@ -115,11 +115,12 @@ const mapDispatchToProps = dispatch => {
     hideWorkflowDialog: () => dispatch(hideWorkflowDialog()),
     setCurrentStep: step => dispatch(setCurrentStep(step)),
     storeSnackbarMessage: message => dispatch(storeSnackbarMessage(message)),
-    storeWorkflowDocument: (payload, name) => dispatch(storeWorkflowDocument(payload, name)),
+    storeWorkflowDocument: (payload, name, fileName) => dispatch(storeWorkflowDocument(payload, name, fileName)),
     defaultWorkflowExchangeRate: exchangeRate => dispatch(defaultWorkflowExchangeRate(exchangeRate))
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-  withInitialLoading(withStyles(styles)(toJS(WorkflowDialogContainer)))
-);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withInitialLoading(withStyles(styles)(toJS(WorkflowDialogContainer))));

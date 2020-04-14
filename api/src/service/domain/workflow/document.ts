@@ -3,8 +3,10 @@ import Joi = require("joi");
 import uuid = require("uuid");
 
 export interface StoredDocument {
+  // more or less a description
   id: string;
   hash: string;
+  // globally unique id
   documentId: string;
 }
 

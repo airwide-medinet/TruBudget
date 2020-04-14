@@ -18,6 +18,7 @@ import * as WorkflowitemEventSourcing from "./workflowitem_eventsourcing";
 import * as WorkflowitemUpdated from "./workflowitem_updated";
 import * as WorkflowitemDocumentUploaded from "./workflowitem_document_uploaded";
 import { UploadedDocument, hashDocument } from "./document";
+import logger from "../../../lib/logger";
 
 export interface RequestData {
   displayName?: string;
@@ -113,30 +114,30 @@ export async function updateWorkflowitem(
     );
 
   // handle new documents
-  const newDocumentUploadedEvents: BusinessEvent[] = [];
+  let newDocumentUploadedEvents: BusinessEvent[] = [];
   if (newEvent.update.documents && newEvent.update.documents.length > 0) {
     const { documents } = newEvent.update;
     // TODO: Validate documents
-    newDocumentUploadedEvents.concat(
-      documents.map((d, i) => {
-        const docToUpload: UploadedDocument = {
-          base64: modification.documents ? modification.documents[i].base64 : "",
-          fileName: modification.documents
+
+    newDocumentUploadedEvents = documents.map((d, i) => {
+      const docToUpload: UploadedDocument = {
+        base64: modification.documents ? modification.documents[i].base64 : "",
+        fileName:
+          modification.documents && modification.documents[i].fileName
             ? modification.documents[i].fileName
             : "unknown-file.pdf",
-          id: d.documentId,
-        };
+        id: d.documentId,
+      };
 
-        return WorkflowitemDocumentUploaded.createEvent(
-          ctx.source,
-          issuer.id,
-          projectId,
-          subprojectId,
-          workflowitemId,
-          docToUpload,
-        );
-      }),
-    );
+      return WorkflowitemDocumentUploaded.createEvent(
+        ctx.source,
+        issuer.id,
+        projectId,
+        subprojectId,
+        workflowitemId,
+        docToUpload,
+      );
+    });
   }
 
   return {

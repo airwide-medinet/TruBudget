@@ -106,7 +106,17 @@ export async function store(conn: ConnToken, ctx: Ctx, event: BusinessEvent): Pr
       });
 
     case "workflowitem_document_uploaded":
-      // TODO: store to chain
+      await ensureStreamExists(conn, ctx, "offchain_documents", "offchain_documents");
+      return writeTo(
+        conn,
+        ctx,
+        {
+          stream: "offchain_documents",
+          keys: [event.document.id],
+          event,
+        },
+        true,
+      );
       break;
 
     case "notification_created":
@@ -137,25 +147,16 @@ async function ensureStreamExists(conn: ConnToken, ctx: Ctx, name: string, kind:
     });
 }
 
-async function multiWriteTo(conn: ConnToken, ctx: Ctx, items: PublishableData[]) {
-  await conn.multichainClient.getRpcClient().invoke(
-    "publishmulti",
-    "defaultStream",
-    items.map((i) => {
-      logger.debug({ ctx }, `Publishing ${i.event.type} to ${i.stream}/${i.keys}`);
-      return {
-        keys: i.keys,
-        data: i.event,
-        for: i.stream,
-        options: i.offchain ? "offchain" : undefined,
-      };
-    }),
-  );
-}
-
-async function writeTo(conn: ConnToken, ctx: Ctx, { stream, keys, event }: PublishableData) {
+async function writeTo(
+  conn: ConnToken,
+  ctx: Ctx,
+  { stream, keys, event }: PublishableData,
+  offchain?: Boolean,
+) {
   const streamitem = { json: event };
   logger.debug({ ctx }, `Publishing ${event.type} to ${stream}/${keys}`);
   // TODO publishfrom address
-  await conn.multichainClient.getRpcClient().invoke("publish", stream, keys, streamitem);
+  await conn.multichainClient
+    .getRpcClient()
+    .invoke("publish", stream, keys, streamitem, offchain ? "offchain" : "");
 }

@@ -18,6 +18,7 @@ import * as Subproject from "./subproject";
 import * as Workflowitem from "./workflowitem";
 import * as WorkflowitemCreated from "./workflowitem_created";
 import * as WorkflowitemDocumentUploaded from "./workflowitem_document_uploaded";
+import logger from "../../../lib/logger";
 
 export interface RequestData {
   projectId: Project.Id;
@@ -152,7 +153,10 @@ export async function createWorkflowitem(
   const documentUploadedEvents: BusinessEvent[] = documents.map((d, i) => {
     const docToUpload: UploadedDocument = {
       base64: reqData.documents ? reqData.documents[i].base64 : "",
-      fileName: reqData.documents ? reqData.documents[i].fileName : "unknown-file.pdf",
+      fileName:
+        reqData.documents && reqData.documents[i].fileName
+          ? reqData.documents[i].fileName
+          : "uploaded_file.pdf",
       id: d.documentId,
     };
 

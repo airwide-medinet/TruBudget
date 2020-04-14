@@ -16,6 +16,7 @@ import {
 import * as Project from "./project";
 import * as Subproject from "./subproject";
 import * as Workflowitem from "./workflowitem";
+import logger from "../../../lib/logger";
 
 type eventTypeType = "workflowitem_document_uploaded";
 const eventType: eventTypeType = "workflowitem_document_uploaded";
@@ -31,7 +32,7 @@ export interface Event {
   publisher: Identity;
   projectId: Project.Id;
   subprojectId: Subproject.Id;
-  workflowItemId: Workflowitem.Id;
+  workflowitemId: Workflowitem.Id;
   document: InitialData;
 }
 
@@ -56,7 +57,7 @@ export function createEvent(
   publisher: Identity,
   projectId: Project.Id,
   subprojectId: Subproject.Id,
-  workflowItemId: Workflowitem.Id,
+  workflowitemId: Workflowitem.Id,
   document: InitialData,
   time: string = new Date().toISOString(),
 ): Event {
@@ -66,7 +67,7 @@ export function createEvent(
     publisher,
     projectId,
     subprojectId,
-    workflowItemId,
+    workflowitemId,
     document,
     time,
   };

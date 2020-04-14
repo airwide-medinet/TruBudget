@@ -77,6 +77,11 @@ function mkSwaggerSchema(server: FastifyInstance) {
                                   example:
                                     "F315FAA31B5B70089E7F464E718191EAF5F93E61BB5FDCDCEF32AF258B80B4B2",
                                 },
+                                documentId: {
+                                  type: "string",
+                                  example: "abc-cde-adf",
+                                  additionalProperties: true,
+                                },
                               },
                             },
                           },

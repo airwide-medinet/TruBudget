@@ -10,6 +10,7 @@ import * as Workflowitem from "./domain/workflow/workflowitem";
 import * as WorkflowitemUpdate from "./domain/workflow/workflowitem_update";
 import * as GroupQuery from "./group_query";
 import { store } from "./store";
+import logger from "../lib/logger";
 
 export type RequestData = WorkflowitemUpdate.RequestData;
 
