@@ -32,7 +32,8 @@ import {
   SUBPROJECT_SEARCH_TERM,
   SUBPROJECT_STORE_FILTERED_PROJECTS,
   SUBPROJECT_STORE_HIGHLIGHTING_REGEX,
-  SUBPROJECT_STORE_SEARCH_TERMS_AS_ARRAY
+  SUBPROJECT_STORE_SEARCH_TERMS_AS_ARRAY,
+  SUBPROJECTS_STORE_SELECTED_PERMISSION
 } from "./actions";
 import { convertToURLQuery } from "../../helper";
 
@@ -83,7 +84,8 @@ const defaultState = fromJS({
   searchTerm: "",
   searchTerms: [],
   searchBarDisplayed: true,
-  highlightingRegex: ""
+  highlightingRegex: "",
+  selectedPermission: ""
 });
 
 export default function detailviewReducer(state = defaultState, action) {
@@ -250,6 +252,8 @@ export default function detailviewReducer(state = defaultState, action) {
       return state.set("highlightingRegex", fromJS(action.highlightingRegex));
     case SUBPROJECT_STORE_SEARCH_TERMS_AS_ARRAY:
       return state.set("searchTerms", fromJS(action.searchTerms));
+    case SUBPROJECTS_STORE_SELECTED_PERMISSION:
+      return state.set("selectedPermission", fromJS(action.selectedPermission));
     default:
       return state;
   }

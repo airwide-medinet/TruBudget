@@ -16,7 +16,9 @@ function ProjectHistoryDrawer({
   isLoading,
   getUserDisplayname,
   hideHistory,
-  fetchNextProjectHistoryPage
+  fetchNextProjectHistoryPage,
+  storePermissionSelected,
+  selectedPermission
 }) {
   return (
     <HistoryDrawer
@@ -28,6 +30,9 @@ function ProjectHistoryDrawer({
       hasMore={currentHistoryPage < lastHistoryPage}
       isLoading={isLoading}
       getUserDisplayname={getUserDisplayname}
+      permissionLevel={"project"}
+      storePermissionSelected={storePermissionSelected}
+      selectedPermission={selectedPermission}
     />
   );
 }

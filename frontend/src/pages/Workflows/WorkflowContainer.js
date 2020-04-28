@@ -35,7 +35,8 @@ import {
   showWorkflowItemPermissions,
   storeWorkflowItemsSelected,
   storeWorkflowType,
-  updateWorkflowOrderOnState
+  updateWorkflowOrderOnState,
+  storeWorkflowsPermissionSelected
 } from "./actions";
 import SubProjectDetails from "./SubProjectDetails";
 import Workflow from "./Workflow";
@@ -116,7 +117,12 @@ class WorkflowContainer extends Component {
             hideAdditionalData={this.props.hideWorkflowitemAdditionalData}
             {...this.props}
           />
-          <SubprojectHistoryDrawer projectId={this.projectId} subprojectId={this.subprojectId} />
+          <SubprojectHistoryDrawer
+            projectId={this.projectId}
+            subprojectId={this.subprojectId}
+            storeWorkflowsPermissionSelected={this.props.storeWorkflowsPermissionSelected}
+            selectedPermission={this.props.selectedPermission}
+          />
           <WorkflowBatchEditContainer projectId={this.projectId} subProjectId={this.subprojectId} />
         </div>
       </div>
@@ -162,7 +168,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     storeWorkflowItemsSelected: workflowItems => dispatch(storeWorkflowItemsSelected(workflowItems)),
     openAnalyticsDialog: () => dispatch(openAnalyticsDialog()),
     showWorkflowitemAdditionalData: wId => dispatch(showWorkflowitemAdditionalData(wId)),
-    hideWorkflowitemAdditionalData: () => dispatch(hideWorkflowitemAdditionalData())
+    hideWorkflowitemAdditionalData: () => dispatch(hideWorkflowitemAdditionalData()),
+    storeWorkflowsPermissionSelected: selectedPermission =>
+      dispatch(storeWorkflowsPermissionSelected(selectedPermission))
   };
 };
 
@@ -196,7 +204,8 @@ const mapStateToProps = state => {
     isLoading: state.getIn(["workflow", "isHistoryLoading"]),
     isRoot: state.getIn(["navbar", "isRoot"]),
     permissionDialogShown: state.getIn(["workflow", "showWorkflowPermissions"]),
-    idsPermissionsUnassigned: state.getIn(["workflow", "idsPermissionsUnassigned"])
+    idsPermissionsUnassigned: state.getIn(["workflow", "idsPermissionsUnassigned"]),
+    selectedPermission: state.getIn(["workflow", "selectedPermission"])
   };
 };
 

@@ -11,7 +11,10 @@ export default function HistoryDrawer({
   fetchNext,
   hasMore,
   isLoading,
-  getUserDisplayname
+  getUserDisplayname,
+  permissionLevel,
+  storePermissionSelected,
+  selectedPermission
 }) {
   return (
     <Drawer open={doShow} onClose={onClose} anchor="right">
@@ -22,6 +25,9 @@ export default function HistoryDrawer({
         isLoading={isLoading}
         getUserDisplayname={getUserDisplayname}
         fetchNext={fetchNext}
+        permissionLevel={permissionLevel}
+        storePermissionSelected={storePermissionSelected}
+        selectedPermission={selectedPermission}
       />
     </Drawer>
   );

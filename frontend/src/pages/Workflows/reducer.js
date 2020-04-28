@@ -61,7 +61,8 @@ import {
   WORKFLOW_EXCHANGERATE,
   WORKFLOW_NAME,
   WORKFLOW_PURPOSE,
-  WORKFLOW_STATUS
+  WORKFLOW_STATUS,
+  WORKFLOWS_STORE_SELECTED_PERMISSION
 } from "./actions";
 
 const historyPageSize = 50;
@@ -144,7 +145,8 @@ const defaultState = fromJS({
   isFetchingSubProjectPermissions: false,
   isFetchingWorkflowitemPermissions: false,
   permittedToGrant: false,
-  applyActions: true
+  applyActions: true,
+  selectedPermission: ""
 });
 
 export default function detailviewReducer(state = defaultState, action) {
@@ -434,6 +436,8 @@ export default function detailviewReducer(state = defaultState, action) {
       return state.updateIn(["temporaryPermissions", action.permission], users =>
         users.filter(user => user !== action.userId)
       );
+    case WORKFLOWS_STORE_SELECTED_PERMISSION:
+      return state.set("selectedPermission", fromJS(action.selectedPermission));
     default:
       return state;
   }

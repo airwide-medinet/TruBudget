@@ -9,6 +9,7 @@ import _isEmpty from "lodash/isEmpty";
 import { formatString } from "../../helper";
 import { dateFormat } from "../../helper";
 import strings from "../../localizeStrings";
+import HistorySearch from "../Common/History/HistorySearch";
 
 const styles = {
   list: {
@@ -17,7 +18,15 @@ const styles = {
   }
 };
 
-export default function HistoryList({ events, nEventsTotal, hasMore, isLoading, getUserDisplayname }) {
+export default function HistoryList({
+  events,
+  nEventsTotal,
+  hasMore,
+  isLoading,
+  getUserDisplayname,
+  permissionLevel,
+  storePermissionSelected
+}) {
   const eventItems = events.map((event, index) => {
     if (!(event.businessEvent && event.snapshot)) {
       // eslint-disable-next-line no-console
@@ -44,6 +53,11 @@ export default function HistoryList({ events, nEventsTotal, hasMore, isLoading, 
       subheader={<ListSubheader disableSticky>{strings.common.history}</ListSubheader>}
       style={styles.list}
     >
+      <HistorySearch
+        data-test="history-search"
+        permissionLevel={permissionLevel}
+        storePermissionSelected={storePermissionSelected}
+      />
       {!isLoading && nEventsTotal === 0 ? (
         <ListItem key="no-element">
           <Avatar alt={""} src="" />

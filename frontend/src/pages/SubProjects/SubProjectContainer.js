@@ -24,7 +24,8 @@ import {
   storeSubSearchBarDisplayed,
   storeFilteredSubProjects,
   storeSubHighlightingRegex,
-  storeSubSearchTermArray
+  storeSubSearchTermArray,
+  storeSubPermissionSelected
 } from "./actions";
 import ProjectDetails from "./ProjectDetails";
 import ProjectHistoryDrawer from "./ProjectHistoryDrawer";
@@ -122,7 +123,11 @@ class SubProjectContainer extends Component {
             subProjects={this.props.filteredSubProjects}
             highlightingRegex={this.props.highlightingRegex}
           />
-          <ProjectHistoryDrawer projectId={projectId} />
+          <ProjectHistoryDrawer
+            projectId={projectId}
+            storePermissionSelected={this.props.storeSubPermissionSelected}
+            selectedPermission={this.props.selectedPermission}
+          />
           {this.props.permissionDialogShown ? (
             <SubprojectPermissionsContainer projectId={projectId} subProjects={this.props.filteredSubProjects} />
           ) : null}
@@ -162,7 +167,8 @@ const mapDispatchToProps = dispatch => {
     storeSubSearchBarDisplayed: subSearchBarDisplayed => dispatch(storeSubSearchBarDisplayed(subSearchBarDisplayed)),
     storeFilteredSubProjects: filteredSubProjects => dispatch(storeFilteredSubProjects(filteredSubProjects)),
     storeSubHighlightingRegex: highlightingRegex => dispatch(storeSubHighlightingRegex(highlightingRegex)),
-    storeSubSearchTermArray: searchTerms => dispatch(storeSubSearchTermArray(searchTerms))
+    storeSubSearchTermArray: searchTerms => dispatch(storeSubSearchTermArray(searchTerms)),
+    storeSubPermissionSelected: selectedPermission => dispatch(storeSubPermissionSelected(selectedPermission))
   };
 };
 
@@ -194,7 +200,8 @@ const mapStateToProps = state => {
     searchBarDisplayed: state.getIn(["detailview", "searchBarDisplayed"]),
     highlightingRegex: state.getIn(["detailview", "highlightingRegex"]),
     searchTerms: state.getIn(["detailview", "searchTerms"]),
-    idsPermissionsUnassigned: state.getIn(["detailview", "idsPermissionsUnassigned"])
+    idsPermissionsUnassigned: state.getIn(["detailview", "idsPermissionsUnassigned"]),
+    selectedPermission: state.getIn(["detailview", "selectedPermission"])
   };
 };
 

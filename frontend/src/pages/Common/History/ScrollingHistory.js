@@ -22,7 +22,17 @@ export default class ScrollingHistory extends React.Component {
   }
 
   render() {
-    const { nEventsTotal, events, fetchNext, hasMore, isLoading, getUserDisplayname } = this.props;
+    const {
+      nEventsTotal,
+      events,
+      fetchNext,
+      hasMore,
+      isLoading,
+      getUserDisplayname,
+      permissionLevel,
+      storePermissionSelected,
+      selectedPermission
+    } = this.props;
     return (
       <InfiniteScroll
         pageStart={0}
@@ -45,6 +55,9 @@ export default class ScrollingHistory extends React.Component {
           hasMore={hasMore}
           isLoading={isLoading}
           getUserDisplayname={getUserDisplayname}
+          permissionLevel={permissionLevel}
+          storePermissionSelected={storePermissionSelected}
+          selectedPermission={selectedPermission}
         />
       </InfiniteScroll>
     );
