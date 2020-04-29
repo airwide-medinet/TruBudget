@@ -1039,7 +1039,15 @@ export function* fetchNextProjectHistoryPageSaga({ projectId, showLoading }) {
     // is a multiple of the page size and we need to fetch a whole page
     const limit = isLastPage && remainingItems !== 0 ? remainingItems : historyPageSize;
 
-    const { historyItemsCount, events } = yield callApi(api.viewProjectHistory, projectId, offset, limit);
+    const filterByPermission = "project.viewSummary";
+
+    const { historyItemsCount, events } = yield callApi(
+      api.viewProjectHistory,
+      projectId,
+      offset,
+      limit,
+      filterByPermission
+    );
     const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
     const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
     if (isFirstPage) {

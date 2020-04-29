@@ -8,12 +8,15 @@ export function isNonemptyString(x: any): boolean {
   return typeof x === "string" && x.length > 0;
 }
 
+export function isString(x: any): boolean {
+  return typeof x === "string";
+}
 export async function isUserOrUndefined(conn: ConnToken, ctx: Ctx, issuer: ServiceUser, input) {
   if (input === undefined) {
     return true;
   } else {
     if (isNonemptyString) {
-      const user = await UserQuery.getUser(conn, ctx, issuer, input).catch(err => {
+      const user = await UserQuery.getUser(conn, ctx, issuer, input).catch((err) => {
         if (err.kind === "NotFound") {
           return undefined;
         } else {
@@ -32,7 +35,7 @@ export function findBadKeysInObject(
   isGood: (val: any) => boolean,
   candidate: any,
 ): string[] {
-  return expectedKeys.filter(key => typeof candidate !== "object" || !isGood(candidate[key]));
+  return expectedKeys.filter((key) => typeof candidate !== "object" || !isGood(candidate[key]));
 }
 export function isDate(date: string) {
   // @ts-ignore
@@ -55,7 +58,7 @@ export async function asyncValue(multichain, name, val, isValid, defaultValue?) 
   if (val === undefined) {
     val = defaultValue; // might be undefined
   }
-  if (!(await isValid(multichain, val).catch(_err => false))) {
+  if (!(await isValid(multichain, val).catch((_err) => false))) {
     throwParseError([name]);
   }
   return val;

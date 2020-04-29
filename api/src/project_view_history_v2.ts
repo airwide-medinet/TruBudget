@@ -4,12 +4,13 @@ import { toHttpError } from "./http_errors";
 import * as NotAuthenticated from "./http_errors/not_authenticated";
 import { AuthenticatedRequest } from "./httpd/lib";
 import { Ctx } from "./lib/ctx";
-import { isNonemptyString } from "./lib/validation";
+import { isNonemptyString, isString } from "./lib/validation";
 import { ServiceUser } from "./service/domain/organization/service_user";
 import * as Project from "./service/domain/workflow/project";
 import { ProjectTraceEvent } from "./service/domain/workflow/project_trace_event";
 import * as Subproject from "./service/domain/workflow/subproject";
 import { SubprojectTraceEvent } from "./service/domain/workflow/subproject_trace_event";
+import { permissionsSchema } from "./service/domain/permissions";
 
 function mkSwaggerSchema(server: FastifyInstance) {
   return {
@@ -36,6 +37,10 @@ function mkSwaggerSchema(server: FastifyInstance) {
               "have happened after that first event. The `offset` may also " +
               "be negative. For example, an `offset` of `-10` with limit `10` requests " +
               "the 10 most recent events.",
+          },
+          filterByPermission: {
+            type: "string",
+            description: "Only show entries with the selected Permission",
           },
         },
       },
@@ -100,6 +105,24 @@ interface Service {
   ): Promise<ProjectTraceEvent[]>;
 }
 
+function filterEvents(events, filterByPermission) {
+  if (filterByPermission !== "") {
+    return events.filter((event) => {
+      console.log(event.businessEvent.hasOwnProperty("permission"));
+      if (event.businessEvent.hasOwnProperty("permission")) {
+        console.log(" hat die prop: ");
+        console.log(event.businessEvent.permission);
+        console.log(event.businessEvent.permission === filterByPermission);
+        console.log(filterByPermission);
+        return event.businessEvent.permission === filterByPermission;
+      }
+      console.log(" hat dNICHT die prop");
+      return false;
+    });
+  }
+  return events;
+}
+
 export function addHttpHandler(server: FastifyInstance, urlPrefix: string, service: Service) {
   server.get(
     `${urlPrefix}/project.viewHistory.v2`,
@@ -150,11 +173,25 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
         return;
       }
 
+      const filterByPermission = request.query.filterByPermission || "";
+      if (!isString(filterByPermission)) {
+        reply.status(404).send({
+          apiVersion: "1.0",
+          error: {
+            code: 404,
+            message: "if present, the query parameter `filterByPermission` must be a string",
+          },
+        });
+        return;
+      }
+
       try {
         const events = await service.getProjectTraceEvents(ctx, user, projectId);
-
-        const offsetIndex = offset < 0 ? Math.max(0, events.length + offset) : offset;
-        const slice = events.slice(
+        const filteredByPermission = filterEvents(events, filterByPermission);
+        console.log(" FERTIG: ");
+        console.log(filteredByPermission);
+        const offsetIndex = offset < 0 ? Math.max(0, filteredByPermission.length + offset) : offset;
+        const slice = filteredByPermission.slice(
           offsetIndex,
           limit === undefined ? undefined : offsetIndex + limit,
         );

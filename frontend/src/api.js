@@ -124,8 +124,10 @@ class Api {
     });
 
   viewProjectDetails = projectId => instance.get(`/project.viewDetails?projectId=${projectId}`);
-  viewProjectHistory = (projectId, offset, limit) =>
-    instance.get(`/project.viewHistory.v2?projectId=${projectId}&offset=${offset}&limit=${limit}`);
+  viewProjectHistory = (projectId, offset, limit, filterByPermission) =>
+    instance.get(
+      `/project.viewHistory.v2?projectId=${projectId}&offset=${offset}&limit=${limit}&filterByPermission=${filterByPermission}`
+    );
 
   listProjectIntents = projectId => instance.get(`/project.intent.listPermissions?projectId=${projectId}`);
 
