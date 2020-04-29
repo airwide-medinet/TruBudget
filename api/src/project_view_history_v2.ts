@@ -1,15 +1,15 @@
 import { FastifyInstance } from "fastify";
-
+import { AuthenticatedRequest } from "./httpd/lib";
 import { toHttpError } from "./http_errors";
 import * as NotAuthenticated from "./http_errors/not_authenticated";
-import { AuthenticatedRequest } from "./httpd/lib";
 import { Ctx } from "./lib/ctx";
 import { isNonemptyString } from "./lib/validation";
+import * as Result from "./result";
 import { ServiceUser } from "./service/domain/organization/service_user";
 import * as Project from "./service/domain/workflow/project";
+import * as ProjectHistory from "./service/domain/workflow/project_history_get";
 import { ProjectTraceEvent } from "./service/domain/workflow/project_trace_event";
-import * as Subproject from "./service/domain/workflow/subproject";
-import { SubprojectTraceEvent } from "./service/domain/workflow/subproject_trace_event";
+import VError = require("verror");
 
 function mkSwaggerSchema(server: FastifyInstance) {
   return {
@@ -93,11 +93,12 @@ function mkSwaggerSchema(server: FastifyInstance) {
 }
 
 interface Service {
-  getProjectTraceEvents(
+  getProjectHistory(
     ctx: Ctx,
     user: ServiceUser,
     projectId: Project.Id,
-  ): Promise<ProjectTraceEvent[]>;
+    filter: ProjectHistory.Filter,
+  ): Promise<Result.Type<ProjectTraceEvent[]>>;
 }
 
 export function addHttpHandler(server: FastifyInstance, urlPrefix: string, service: Service) {
@@ -150,8 +151,20 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
         return;
       }
 
+      const filter: ProjectHistory.Filter = {
+        publisher: request.query.publisher,
+        startAt: request.query.startAt,
+        endAt: request.query.endAt,
+        eventType: request.query.eventType,
+      };
+
       try {
-        const events = await service.getProjectTraceEvents(ctx, user, projectId);
+        // Get all Events in project stream
+        const eventsResult = await service.getProjectHistory(ctx, user, projectId, filter);
+        if (Result.isErr(eventsResult)) {
+          throw new VError(eventsResult, "project.viewHistory failed");
+        }
+        const events: ProjectTraceEvent[] = eventsResult;
 
         const offsetIndex = offset < 0 ? Math.max(0, events.length + offset) : offset;
         const slice = events.slice(

@@ -53,7 +53,7 @@ import * as ProjectPermissionRevokeService from "./service/project_permission_re
 import * as ProjectPermissionsListService from "./service/project_permissions_list";
 import * as ProjectProjectedBudgetDeleteService from "./service/project_projected_budget_delete";
 import * as ProjectProjectedBudgetUpdateService from "./service/project_projected_budget_update";
-import * as ProjectTraceEventsService from "./service/project_trace_events";
+import * as ProjectViewHistoryService from "./service/project_history_get";
 import * as ProjectUpdateService from "./service/project_update";
 import { ConnectionSettings } from "./service/RpcClient.h";
 import * as SubprojectAssignService from "./service/subproject_assign";
@@ -180,7 +180,7 @@ const server = createBasicApp(jwtSecret, URL_PREFIX, port, SWAGGER_BASEPATH, env
  */
 
 // Enable useful traces of unhandled-promise warnings:
-process.on("unhandledRejection", err => {
+process.on("unhandledRejection", (err) => {
   logger.fatal({ err }, "UNHANDLED PROMISE REJECTION");
   process.exit(1);
 });
@@ -189,13 +189,13 @@ function registerSelf(): Promise<boolean> {
   return multichainClient
     .getRpcClient()
     .invoke("listaddresses", "*", false, 1, 0)
-    .then(addressInfos =>
+    .then((addressInfos) =>
       addressInfos
-        .filter(info => info.ismine)
-        .map(info => info.address)
-        .find(_ => true),
+        .filter((info) => info.ismine)
+        .map((info) => info.address)
+        .find((_) => true),
     )
-    .then(address => {
+    .then((address) => {
       const req = {
         body: {
           data: {
@@ -427,8 +427,8 @@ ProjectViewHistoryAPI.addHttpHandler(server, URL_PREFIX, {
 });
 
 ProjectViewHistoryAPIv2.addHttpHandler(server, URL_PREFIX, {
-  getProjectTraceEvents: (ctx, user, projectId) =>
-    ProjectTraceEventsService.getTraceEvents(db, ctx, user, projectId),
+  getProjectHistory: (ctx, user, projectId, filter) =>
+    ProjectViewHistoryService.getProjectHistory(db, ctx, user, projectId, filter),
 });
 
 ProjectProjectedBudgetUpdateAPI.addHttpHandler(server, URL_PREFIX, {
@@ -710,7 +710,7 @@ WorkflowitemValidateDocumentAPI.addHttpHandler(server, URL_PREFIX, {
  * Run the server.
  */
 
-server.listen(port, "0.0.0.0", async err => {
+server.listen(port, "0.0.0.0", async (err) => {
   if (err) {
     logger.fatal({ err }, "Connection could not be established. Aborting.");
     console.trace();
