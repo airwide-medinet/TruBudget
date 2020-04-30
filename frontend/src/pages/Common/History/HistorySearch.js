@@ -53,7 +53,7 @@ const getSubprojectMenuItems = projectedBudgets => {
   });
 };
 
-const HistorySearch = ({ permissionLevel, storePermissionSelected, storeStartDate }) => {
+const HistorySearch = ({ permissionLevel, storePermissionSelected, storeStartDate, storeEndDate }) => {
   const [permissionSelect, setPermissionSelect] = React.useState("");
   const handlePermissionSelect = value => {
     setPermissionSelect(value);
@@ -65,7 +65,8 @@ const HistorySearch = ({ permissionLevel, storePermissionSelected, storeStartDat
 
   return (
     <>
-      <DatePicker styles={styles.datepicker} onChange={value => storeStartDate(value)} />
+      <DatePicker styles={styles.datepicker} label={"start"} onChange={value => storeStartDate(value)} />
+      <DatePicker styles={styles.datepicker} label={"end"} onChange={value => storeEndDate(value)} />
 
       <TableCell>
         <DropDown

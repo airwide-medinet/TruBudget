@@ -20,7 +20,8 @@ function SubprojectHistoryDrawer({
   lastHistoryPage,
   storePermissionSelected,
   selectedPermission,
-  storeStartDate
+  storeStartDate,
+  storeEndDate
 }) {
   return (
     <HistoryDrawer
@@ -36,6 +37,7 @@ function SubprojectHistoryDrawer({
       storePermissionSelected={storePermissionSelected}
       selectedPermission={selectedPermission}
       storeStartDate={storeStartDate}
+      storeEndDate={storeEndDate}
     />
   );
 }

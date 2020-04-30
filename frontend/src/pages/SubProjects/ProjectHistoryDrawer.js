@@ -19,7 +19,8 @@ function ProjectHistoryDrawer({
   fetchNextProjectHistoryPage,
   storePermissionSelected,
   selectedPermission,
-  storeStartDate
+  storeStartDate,
+  storeEndDate
 }) {
   console.log(storeStartDate);
   return (
@@ -36,6 +37,7 @@ function ProjectHistoryDrawer({
       storePermissionSelected={storePermissionSelected}
       selectedPermission={selectedPermission}
       storeStartDate={storeStartDate}
+      storeEndDate={storeEndDate}
     />
   );
 }

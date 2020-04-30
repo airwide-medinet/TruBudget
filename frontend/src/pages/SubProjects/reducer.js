@@ -34,7 +34,8 @@ import {
   SUBPROJECT_STORE_HIGHLIGHTING_REGEX,
   SUBPROJECT_STORE_SEARCH_TERMS_AS_ARRAY,
   SUBPROJECTS_STORE_SELECTED_PERMISSION,
-  SUBPROJECTS_STORE_HISTORY_START_DATE
+  SUBPROJECTS_STORE_HISTORY_START_DATE,
+  SUBPROJECTS_STORE_HISTORY_END_DATE
 } from "./actions";
 import { convertToURLQuery } from "../../helper";
 
@@ -87,7 +88,8 @@ const defaultState = fromJS({
   searchBarDisplayed: true,
   highlightingRegex: "",
   selectedPermission: "",
-  searchHistoryStartDate: "01.01.2020"
+  searchHistoryStartDate: "01.01.2019",
+  searchHistoryEndDate: "01.01.2020"
 });
 
 export default function detailviewReducer(state = defaultState, action) {
@@ -258,6 +260,8 @@ export default function detailviewReducer(state = defaultState, action) {
       return state.set("selectedPermission", fromJS(action.selectedPermission));
     case SUBPROJECTS_STORE_HISTORY_START_DATE:
       return state.set("searchHistoryStartDate", fromJS(action.searchHistoryStartDate));
+    case SUBPROJECTS_STORE_HISTORY_END_DATE:
+      return state.set("searchHistoryEndDate", fromJS(action.searchHistoryEndDate));
     default:
       return state;
   }

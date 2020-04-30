@@ -26,7 +26,8 @@ import {
   storeSubHighlightingRegex,
   storeSubSearchTermArray,
   storeSubPermissionSelected,
-  storeSubSearchHistoryStartDate
+  storeSubSearchHistoryStartDate,
+  storeSubSearchHistoryEndDate
 } from "./actions";
 import ProjectDetails from "./ProjectDetails";
 import ProjectHistoryDrawer from "./ProjectHistoryDrawer";
@@ -46,7 +47,6 @@ class SubProjectContainer extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props.storeSubSearchHistoryStartDate);
     this.props.setSelectedView(this.projectId, "project");
     this.props.fetchAllProjectDetails(this.projectId, true);
     this.props.fetchUser();
@@ -130,6 +130,7 @@ class SubProjectContainer extends Component {
             storePermissionSelected={this.props.storeSubPermissionSelected}
             selectedPermission={this.props.selectedPermission}
             storeStartDate={this.props.storeSubSearchHistoryStartDate}
+            storeEndDate={this.props.storeSubSearchHistoryEndDate}
           />
           {this.props.permissionDialogShown ? (
             <SubprojectPermissionsContainer projectId={projectId} subProjects={this.props.filteredSubProjects} />
@@ -173,7 +174,8 @@ const mapDispatchToProps = dispatch => {
     storeSubSearchTermArray: searchTerms => dispatch(storeSubSearchTermArray(searchTerms)),
     storeSubPermissionSelected: selectedPermission => dispatch(storeSubPermissionSelected(selectedPermission)),
     storeSubSearchHistoryStartDate: searchHistoryStartDate =>
-      dispatch(storeSubSearchHistoryStartDate(searchHistoryStartDate))
+      dispatch(storeSubSearchHistoryStartDate(searchHistoryStartDate)),
+    storeSubSearchHistoryEndDate: searchHistoryEndDate => dispatch(storeSubSearchHistoryEndDate(searchHistoryEndDate))
   };
 };
 

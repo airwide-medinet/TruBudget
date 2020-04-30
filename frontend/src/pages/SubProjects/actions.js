@@ -68,6 +68,7 @@ export const SUBPROJECT_STORE_SEARCH_TERMS_AS_ARRAY = "SUBPROJECT_STORE_SEARCH_T
 
 export const SUBPROJECTS_STORE_SELECTED_PERMISSION = "SUBPROJECTS_STORE_SELECTED_PERMISSION";
 export const SUBPROJECTS_STORE_HISTORY_START_DATE = "SUBPROJECTS_STORE_HISTORY_START_DATE";
+export const SUBPROJECTS_STORE_HISTORY_END_DATE = "SUBPROJECTS_STORE_HISTORY_END_DATE";
 
 export function fetchSubProjectPermissions(projectId, subprojectId, showLoading = false) {
   return {
@@ -363,5 +364,11 @@ export function storeSubSearchHistoryStartDate(searchHistoryStartDate) {
   return {
     type: SUBPROJECTS_STORE_HISTORY_START_DATE,
     searchHistoryStartDate
+  };
+}
+export function storeSubSearchHistoryEndDate(searchHistoryEndDate) {
+  return {
+    type: SUBPROJECTS_STORE_HISTORY_END_DATE,
+    searchHistoryEndDate
   };
 }

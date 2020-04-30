@@ -119,6 +119,7 @@ export const REMOVE_TEMPORARY_WORKFLOWITEM_PERMISSION = "REMOVE_TEMPORARY_WORKFL
 
 export const WORKFLOWS_STORE_SELECTED_PERMISSION = "WORKFLOWS_STORE_SELECTED_PERMISSION";
 export const WORKFLOWS_STORE_HISTORY_START_DATE = "WORKFLOWS_STORE_HISTORY_START_DATE";
+export const WORKFLOWS_STORE_HISTORY_END_DATE = "WORKFLOWS_STORE_HISTORY_END_DATE";
 
 export function fetchAllSubprojectDetails(projectId, subprojectId, showLoading = false) {
   return {
@@ -672,5 +673,11 @@ export function storeWorkflowSearchHistoryStartDate(searchHistoryStartDate) {
   return {
     type: WORKFLOWS_STORE_HISTORY_START_DATE,
     searchHistoryStartDate
+  };
+}
+export function storeWorkflowSearchHistoryEndDate(searchHistoryEndDate) {
+  return {
+    type: WORKFLOWS_STORE_HISTORY_END_DATE,
+    searchHistoryEndDate
   };
 }
