@@ -25,8 +25,10 @@ export default function HistoryList({
   isLoading,
   getUserDisplayname,
   permissionLevel,
-  storePermissionSelected
+  storePermissionSelected,
+  storeStartDate
 }) {
+  console.log(storeStartDate);
   const eventItems = events.map((event, index) => {
     if (!(event.businessEvent && event.snapshot)) {
       // eslint-disable-next-line no-console
@@ -57,6 +59,7 @@ export default function HistoryList({
         data-test="history-search"
         permissionLevel={permissionLevel}
         storePermissionSelected={storePermissionSelected}
+        storeStartDate={storeStartDate}
       />
       {!isLoading && nEventsTotal === 0 ? (
         <ListItem key="no-element">

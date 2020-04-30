@@ -36,7 +36,8 @@ import {
   storeWorkflowItemsSelected,
   storeWorkflowType,
   updateWorkflowOrderOnState,
-  storeWorkflowsPermissionSelected
+  storeWorkflowsPermissionSelected,
+  storeWorkflowSearchHistoryStartDate
 } from "./actions";
 import SubProjectDetails from "./SubProjectDetails";
 import Workflow from "./Workflow";
@@ -120,8 +121,9 @@ class WorkflowContainer extends Component {
           <SubprojectHistoryDrawer
             projectId={this.projectId}
             subprojectId={this.subprojectId}
-            storeWorkflowsPermissionSelected={this.props.storeWorkflowsPermissionSelected}
+            storePermissionSelected={this.props.storeWorkflowsPermissionSelected}
             selectedPermission={this.props.selectedPermission}
+            storeStartDate={this.props.storeWorkflowSearchHistoryStartDate}
           />
           <WorkflowBatchEditContainer projectId={this.projectId} subProjectId={this.subprojectId} />
         </div>

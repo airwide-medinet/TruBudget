@@ -18,8 +18,9 @@ function SubprojectHistoryDrawer({
   fetchNextSubprojectHistoryPage,
   currentHistoryPage,
   lastHistoryPage,
-  storeWorkflowsPermissionSelected,
-  selectedPermission
+  storePermissionSelected,
+  selectedPermission,
+  storeStartDate
 }) {
   return (
     <HistoryDrawer
@@ -32,8 +33,9 @@ function SubprojectHistoryDrawer({
       isLoading={isLoading}
       getUserDisplayname={getUserDisplayname}
       permissionLevel={"subproject"}
-      storePermissionSelected={storeWorkflowsPermissionSelected}
+      storePermissionSelected={storePermissionSelected}
       selectedPermission={selectedPermission}
+      storeStartDate={storeStartDate}
     />
   );
 }

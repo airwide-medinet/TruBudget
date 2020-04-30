@@ -31,7 +31,8 @@ export default class ScrollingHistory extends React.Component {
       getUserDisplayname,
       permissionLevel,
       storePermissionSelected,
-      selectedPermission
+      selectedPermission,
+      storeStartDate
     } = this.props;
     return (
       <InfiniteScroll
@@ -58,6 +59,7 @@ export default class ScrollingHistory extends React.Component {
           permissionLevel={permissionLevel}
           storePermissionSelected={storePermissionSelected}
           selectedPermission={selectedPermission}
+          storeStartDate={storeStartDate}
         />
       </InfiniteScroll>
     );

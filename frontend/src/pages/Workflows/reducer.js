@@ -62,7 +62,8 @@ import {
   WORKFLOW_NAME,
   WORKFLOW_PURPOSE,
   WORKFLOW_STATUS,
-  WORKFLOWS_STORE_SELECTED_PERMISSION
+  WORKFLOWS_STORE_SELECTED_PERMISSION,
+  WORKFLOWS_STORE_HISTORY_START_DATE
 } from "./actions";
 
 const historyPageSize = 50;
@@ -146,7 +147,8 @@ const defaultState = fromJS({
   isFetchingWorkflowitemPermissions: false,
   permittedToGrant: false,
   applyActions: true,
-  selectedPermission: ""
+  selectedPermission: "",
+  searchHistoryStartDate: "01.01.2020"
 });
 
 export default function detailviewReducer(state = defaultState, action) {
@@ -438,6 +440,8 @@ export default function detailviewReducer(state = defaultState, action) {
       );
     case WORKFLOWS_STORE_SELECTED_PERMISSION:
       return state.set("selectedPermission", fromJS(action.selectedPermission));
+    case WORKFLOWS_STORE_HISTORY_START_DATE:
+      return state.set("searchHistoryStartDate", fromJS(action.searchHistoryStartDate));
     default:
       return state;
   }

@@ -18,8 +18,10 @@ function ProjectHistoryDrawer({
   hideHistory,
   fetchNextProjectHistoryPage,
   storePermissionSelected,
-  selectedPermission
+  selectedPermission,
+  storeStartDate
 }) {
+  console.log(storeStartDate);
   return (
     <HistoryDrawer
       doShow={doShow}
@@ -33,6 +35,7 @@ function ProjectHistoryDrawer({
       permissionLevel={"project"}
       storePermissionSelected={storePermissionSelected}
       selectedPermission={selectedPermission}
+      storeStartDate={storeStartDate}
     />
   );
 }
