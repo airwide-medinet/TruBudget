@@ -150,8 +150,8 @@ const defaultState = fromJS({
   permittedToGrant: false,
   applyActions: true,
   selectedPermission: "",
-  searchHistoryStartDate: "2019-01-01",
-  searchHistoryEndDate: "2019-01-01",
+  searchHistoryStartDate: "",
+  searchHistoryEndDate: "",
   searchHistoryName: ""
 });
 

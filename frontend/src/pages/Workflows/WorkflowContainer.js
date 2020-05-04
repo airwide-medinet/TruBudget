@@ -35,11 +35,7 @@ import {
   showWorkflowItemPermissions,
   storeWorkflowItemsSelected,
   storeWorkflowType,
-  updateWorkflowOrderOnState,
-  storeWorkflowsPermissionSelected,
-  storeWorkflowSearchHistoryStartDate,
-  storeWorkflowSearchHistoryEndDate,
-  storeWorkflowSearchHistoryName
+  updateWorkflowOrderOnState
 } from "./actions";
 import SubProjectDetails from "./SubProjectDetails";
 import Workflow from "./Workflow";
@@ -120,15 +116,7 @@ class WorkflowContainer extends Component {
             hideAdditionalData={this.props.hideWorkflowitemAdditionalData}
             {...this.props}
           />
-          <SubprojectHistoryDrawer
-            projectId={this.projectId}
-            subprojectId={this.subprojectId}
-            storePermissionSelected={this.props.storeWorkflowsPermissionSelected}
-            selectedPermission={this.props.selectedPermission}
-            storeHistoryStartDate={this.props.storeWorkflowSearchHistoryStartDate}
-            storeHistoryEndDate={this.props.storeWorkflowSearchHistoryEndDate}
-            storeHistorySearchName={this.props.storeWorkflowSearchHistoryName}
-          />
+          <SubprojectHistoryDrawer projectId={this.projectId} subprojectId={this.subprojectId} />
           <WorkflowBatchEditContainer projectId={this.projectId} subProjectId={this.subprojectId} />
         </div>
       </div>
@@ -174,14 +162,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     storeWorkflowItemsSelected: workflowItems => dispatch(storeWorkflowItemsSelected(workflowItems)),
     openAnalyticsDialog: () => dispatch(openAnalyticsDialog()),
     showWorkflowitemAdditionalData: wId => dispatch(showWorkflowitemAdditionalData(wId)),
-    hideWorkflowitemAdditionalData: () => dispatch(hideWorkflowitemAdditionalData()),
-    storeWorkflowsPermissionSelected: selectedPermission =>
-      dispatch(storeWorkflowsPermissionSelected(selectedPermission)),
-    storeWorkflowSearchHistoryStartDate: searchHistoryStartDate =>
-      dispatch(storeWorkflowSearchHistoryStartDate(searchHistoryStartDate)),
-    storeWorkflowSearchHistoryEndDate: searchHistoryEndDate =>
-      dispatch(storeWorkflowSearchHistoryEndDate(searchHistoryEndDate)),
-    storeWorkflowSearchHistoryName: searchHistoryName => dispatch(storeWorkflowSearchHistoryName(searchHistoryName))
+    hideWorkflowitemAdditionalData: () => dispatch(hideWorkflowitemAdditionalData())
   };
 };
 
@@ -215,8 +196,7 @@ const mapStateToProps = state => {
     isLoading: state.getIn(["workflow", "isHistoryLoading"]),
     isRoot: state.getIn(["navbar", "isRoot"]),
     permissionDialogShown: state.getIn(["workflow", "showWorkflowPermissions"]),
-    idsPermissionsUnassigned: state.getIn(["workflow", "idsPermissionsUnassigned"]),
-    selectedPermission: state.getIn(["workflow", "selectedPermission"])
+    idsPermissionsUnassigned: state.getIn(["workflow", "idsPermissionsUnassigned"])
   };
 };
 

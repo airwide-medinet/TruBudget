@@ -89,8 +89,8 @@ const defaultState = fromJS({
   searchBarDisplayed: true,
   highlightingRegex: "",
   selectedPermission: "",
-  searchHistoryStartDate: "2019-01-01",
-  searchHistoryEndDate: "2019-01-01",
+  searchHistoryStartDate: "",
+  searchHistoryEndDate: "",
   searchHistoryName: ""
 });
 

@@ -4,7 +4,13 @@ import { connect } from "react-redux";
 import { toJS } from "../../helper";
 import HistoryDrawer from "../Common/History/HistoryDrawer";
 import { hideHistory } from "../Notifications/actions";
-import { fetchNextProjectHistoryPage } from "./actions";
+import {
+  fetchNextProjectHistoryPage,
+  storeSubPermissionSelected,
+  storeSubSearchHistoryStartDate,
+  storeSubSearchHistoryEndDate,
+  storeSubHistorySearchName
+} from "./actions";
 
 function ProjectHistoryDrawer({
   projectId,
@@ -17,16 +23,15 @@ function ProjectHistoryDrawer({
   getUserDisplayname,
   hideHistory,
   fetchNextProjectHistoryPage,
-  storePermissionSelected,
+  storeSubPermissionSelected,
   selectedPermission,
-  storeHistoryStartDate,
+  storeSubSearchHistoryStartDate,
   searchHistoryStartDate,
-  storeHistoryEndDate,
+  storeSubSearchHistoryEndDate,
   searchHistoryEndDate,
-  storeHistorySearchName,
+  storeSubHistorySearchName,
   searchHistoryName
 }) {
-  console.log(storeHistoryStartDate);
   return (
     <HistoryDrawer
       doShow={doShow}
@@ -38,13 +43,13 @@ function ProjectHistoryDrawer({
       isLoading={isLoading}
       getUserDisplayname={getUserDisplayname}
       permissionLevel={"project"}
-      storePermissionSelected={storePermissionSelected}
+      storePermissionSelected={storeSubPermissionSelected}
       selectedPermission={selectedPermission}
-      storeHistoryStartDate={storeHistoryStartDate}
+      storeHistoryStartDate={storeSubSearchHistoryStartDate}
       searchHistoryStartDate={searchHistoryStartDate}
-      storeHistoryEndDate={storeHistoryEndDate}
+      storeHistoryEndDate={storeSubSearchHistoryEndDate}
       searchHistoryEndDate={searchHistoryEndDate}
-      storeHistorySearchName={storeHistorySearchName}
+      storeHistorySearchName={storeSubHistorySearchName}
       searchHistoryName={searchHistoryName}
     />
   );
@@ -54,6 +59,7 @@ function mapStateToProps(state) {
   return {
     doShow: state.getIn(["detailview", "showHistory"]),
     events: state.getIn(["detailview", "historyItems"]),
+    selectedPermission: state.getIn(["detailview", "selectedPermission"]),
     searchHistoryStartDate: state.getIn(["detailview", "searchHistoryStartDate"]),
     searchHistoryEndDate: state.getIn(["detailview", "searchHistoryEndDate"]),
     searchHistoryName: state.getIn(["detailview", "searchHistoryName"]),
@@ -65,9 +71,16 @@ function mapStateToProps(state) {
   };
 }
 
-const mapDispatchToProps = {
-  hideHistory,
-  fetchNextProjectHistoryPage
-};
+function mapDispatchToProps(dispatch) {
+  return {
+    hideHistory: () => dispatch(hideHistory()),
+    fetchNextProjectHistoryPage: projectId => dispatch(fetchNextProjectHistoryPage(projectId)),
+    storeSubPermissionSelected: selectedPermission => dispatch(storeSubPermissionSelected(selectedPermission)),
+    storeSubSearchHistoryStartDate: searchHistoryStartDate =>
+      dispatch(storeSubSearchHistoryStartDate(searchHistoryStartDate)),
+    storeSubSearchHistoryEndDate: searchHistoryEndDate => dispatch(storeSubSearchHistoryEndDate(searchHistoryEndDate)),
+    storeSubHistorySearchName: searchHistoryName => dispatch(storeSubHistorySearchName(searchHistoryName))
+  };
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(toJS(ProjectHistoryDrawer));
