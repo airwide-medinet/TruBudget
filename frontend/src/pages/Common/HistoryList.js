@@ -1,4 +1,6 @@
 import Avatar from "@material-ui/core/Avatar";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -53,23 +55,42 @@ export default function HistoryList({
     );
   });
 
+  const [showSearch, setShowSearch] = React.useState(false);
+
+  const handleSearch = event => {
+    setShowSearch(event.target.checked);
+    storePermissionSelected("");
+    storeHistorySearchName("");
+    storeHistoryStartDate("");
+    storeHistoryEndDate("");
+  };
+
   return (
     <List
       data-test="history-list"
       subheader={<ListSubheader disableSticky>{strings.common.history}</ListSubheader>}
       style={styles.list}
     >
-      <HistorySearch
-        data-test="history-search"
-        permissionLevel={permissionLevel}
-        storePermissionSelected={storePermissionSelected}
-        storeHistoryStartDate={storeHistoryStartDate}
-        searchHistoryStartDate={searchHistoryStartDate}
-        storeHistoryEndDate={storeHistoryEndDate}
-        searchHistoryEndDate={searchHistoryEndDate}
-        storeHistorySearchName={storeHistorySearchName}
-        searchHistoryName={searchHistoryName}
+      <FormControlLabel
+        control={<Switch color="primary" />}
+        label={showSearch ? "Close Searchbar" : "Open Searchbar"}
+        labelPlacement="end"
+        onChange={event => handleSearch(event)}
       />
+      {showSearch ? (
+        <HistorySearch
+          data-test="history-search"
+          permissionLevel={permissionLevel}
+          storePermissionSelected={storePermissionSelected}
+          storeHistoryStartDate={storeHistoryStartDate}
+          searchHistoryStartDate={searchHistoryStartDate}
+          storeHistoryEndDate={storeHistoryEndDate}
+          searchHistoryEndDate={searchHistoryEndDate}
+          storeHistorySearchName={storeHistorySearchName}
+          searchHistoryName={searchHistoryName}
+        />
+      ) : null}
+
       {!isLoading && nEventsTotal === 0 ? (
         <ListItem key="no-element">
           <Avatar alt={""} src="" />

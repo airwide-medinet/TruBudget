@@ -6,7 +6,7 @@ import Searchbar from "../../Common/Searchbar";
 import MenuItem from "@material-ui/core/MenuItem";
 import TableCell from "@material-ui/core/TableCell";
 import strings from "../../../localizeStrings";
-import TextField from "@material-ui/core/TextField";
+
 import Button from "@material-ui/core/Button";
 
 const styles = {
@@ -66,27 +66,15 @@ const HistorySearch = ({
   storeHistorySearchName,
   searchHistoryName
 }) => {
-  const [permissionSelect, setPermissionSelect] = React.useState("");
-  const handlePermissionSelect = value => {
-    setPermissionSelect(value);
-    storePermissionSelected(value);
-  };
   const permissionList = keyMatch(strings.permissions, permissionLevel + "_");
 
-  // const [searchHistoryStartDate, setStartDate] = React.useState("");
-  // const handleStartDate = value => {
-  //   setStartDate(value);
-  //   storeHistoryStartDate(value);
-  // };
   console.log(searchHistoryStartDate);
 
   const resetSearchValues = () => {
-    setPermissionSelect("");
     storePermissionSelected("");
     storeHistorySearchName("");
-    storeHistoryStartDate("2019-01-01");
-    storeHistoryEndDate("2019-01-01");
-    console.log(searchHistoryStartDate);
+    storeHistoryStartDate("");
+    storeHistoryEndDate("");
   };
 
   return (
@@ -103,12 +91,7 @@ const HistorySearch = ({
         value={searchHistoryEndDate}
         onChange={value => storeHistoryEndDate(value)}
       />
-      {/* <TextField
-        styles={styles.datepicker}
-        label="Search by name"
-        value={searchHistoryName}
-        onChange={value => storeHistorySearchName(value)}
-      /> */}
+
       <Searchbar
         previewText={"Search for name"}
         storeSearchTerm={storeHistorySearchName}
@@ -120,9 +103,9 @@ const HistorySearch = ({
       <TableCell>
         <DropDown
           style={styles.dropdown}
-          value={permissionSelect}
+          value={"permissionSelect_VALUE"}
           floatingLabel="Filter by Permissions"
-          onChange={value => handlePermissionSelect(value)}
+          onChange={value => storePermissionSelected(value)}
           id="permissionSelect"
           disabled={false}
         >
