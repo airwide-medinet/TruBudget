@@ -26,8 +26,12 @@ export default function HistoryList({
   getUserDisplayname,
   permissionLevel,
   storePermissionSelected,
-  storeStartDate,
-  storeEndDate
+  storeHistoryStartDate,
+  searchHistoryStartDate,
+  storeHistoryEndDate,
+  searchHistoryEndDate,
+  storeHistorySearchName,
+  searchHistoryName
 }) {
   const eventItems = events.map((event, index) => {
     if (!(event.businessEvent && event.snapshot)) {
@@ -59,8 +63,12 @@ export default function HistoryList({
         data-test="history-search"
         permissionLevel={permissionLevel}
         storePermissionSelected={storePermissionSelected}
-        storeStartDate={storeStartDate}
-        storeEndDate={storeEndDate}
+        storeHistoryStartDate={storeHistoryStartDate}
+        searchHistoryStartDate={searchHistoryStartDate}
+        storeHistoryEndDate={storeHistoryEndDate}
+        searchHistoryEndDate={searchHistoryEndDate}
+        storeHistorySearchName={storeHistorySearchName}
+        searchHistoryName={searchHistoryName}
       />
       {!isLoading && nEventsTotal === 0 ? (
         <ListItem key="no-element">

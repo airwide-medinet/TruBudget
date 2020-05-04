@@ -20,8 +20,10 @@ function SubprojectHistoryDrawer({
   lastHistoryPage,
   storePermissionSelected,
   selectedPermission,
-  storeStartDate,
-  storeEndDate
+  storeHistoryStartDate,
+  storeHistoryEndDate,
+  storeHistorySearchName,
+  searchHistoryName
 }) {
   return (
     <HistoryDrawer
@@ -36,8 +38,10 @@ function SubprojectHistoryDrawer({
       permissionLevel={"subproject"}
       storePermissionSelected={storePermissionSelected}
       selectedPermission={selectedPermission}
-      storeStartDate={storeStartDate}
-      storeEndDate={storeEndDate}
+      storeHistoryStartDate={storeHistoryStartDate}
+      storeHistoryEndDate={storeHistoryEndDate}
+      storeHistorySearchName={storeHistorySearchName}
+      searchHistoryName={searchHistoryName}
     />
   );
 }
@@ -46,6 +50,9 @@ function mapStateToProps(state) {
   return {
     doShow: state.getIn(["workflow", "showHistory"]),
     events: state.getIn(["workflow", "historyItems"]),
+    searchHistoryStartDate: state.getIn(["detailview", "searchHistoryStartDate"]),
+    searchHistoryEndDate: state.getIn(["detailview", "searchHistoryEndDate"]),
+    searchHistoryName: state.getIn(["detailview", "searchHistoryName"]),
     nEventsTotal: state.getIn(["workflow", "historyItemsCount"]),
     isLoading: state.getIn(["workflow", "isHistoryLoading"]),
     currentHistoryPage: state.getIn(["workflow", "currentHistoryPage"]),

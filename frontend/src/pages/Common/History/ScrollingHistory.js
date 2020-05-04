@@ -32,8 +32,12 @@ export default class ScrollingHistory extends React.Component {
       permissionLevel,
       storePermissionSelected,
       selectedPermission,
-      storeStartDate,
-      storeEndDate
+      storeHistoryStartDate,
+      searchHistoryStartDate,
+      storeHistoryEndDate,
+      searchHistoryEndDate,
+      storeHistorySearchName,
+      searchHistoryName
     } = this.props;
     return (
       <InfiniteScroll
@@ -60,8 +64,12 @@ export default class ScrollingHistory extends React.Component {
           permissionLevel={permissionLevel}
           storePermissionSelected={storePermissionSelected}
           selectedPermission={selectedPermission}
-          storeStartDate={storeStartDate}
-          storeEndDate={storeEndDate}
+          storeHistoryStartDate={storeHistoryStartDate}
+          searchHistoryStartDate={searchHistoryStartDate}
+          storeHistoryEndDate={storeHistoryEndDate}
+          searchHistoryEndDate={searchHistoryEndDate}
+          storeHistorySearchName={storeHistorySearchName}
+          searchHistoryName={searchHistoryName}
         />
       </InfiniteScroll>
     );

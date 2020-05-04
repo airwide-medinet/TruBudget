@@ -38,7 +38,8 @@ import {
   updateWorkflowOrderOnState,
   storeWorkflowsPermissionSelected,
   storeWorkflowSearchHistoryStartDate,
-  storeWorkflowSearchHistoryEndDate
+  storeWorkflowSearchHistoryEndDate,
+  storeWorkflowSearchHistoryName
 } from "./actions";
 import SubProjectDetails from "./SubProjectDetails";
 import Workflow from "./Workflow";
@@ -124,8 +125,9 @@ class WorkflowContainer extends Component {
             subprojectId={this.subprojectId}
             storePermissionSelected={this.props.storeWorkflowsPermissionSelected}
             selectedPermission={this.props.selectedPermission}
-            storeStartDate={this.props.storeWorkflowSearchHistoryStartDate}
-            storeEndDate={this.props.storeWorkflowSearchHistoryEndDate}
+            storeHistoryStartDate={this.props.storeWorkflowSearchHistoryStartDate}
+            storeHistoryEndDate={this.props.storeWorkflowSearchHistoryEndDate}
+            storeHistorySearchName={this.props.storeWorkflowSearchHistoryName}
           />
           <WorkflowBatchEditContainer projectId={this.projectId} subProjectId={this.subprojectId} />
         </div>
@@ -178,7 +180,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     storeWorkflowSearchHistoryStartDate: searchHistoryStartDate =>
       dispatch(storeWorkflowSearchHistoryStartDate(searchHistoryStartDate)),
     storeWorkflowSearchHistoryEndDate: searchHistoryEndDate =>
-      dispatch(storeWorkflowSearchHistoryEndDate(searchHistoryEndDate))
+      dispatch(storeWorkflowSearchHistoryEndDate(searchHistoryEndDate)),
+    storeWorkflowSearchHistoryName: searchHistoryName => dispatch(storeWorkflowSearchHistoryName(searchHistoryName))
   };
 };
 

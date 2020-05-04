@@ -33,7 +33,7 @@ const styles = {
 };
 const Searchbar = ({
   classes,
-  searchBarDisplayed,
+  searchBarDisplayed = true,
   searchDisabled,
   searchTerm,
   storeSearchBarDisplayed,

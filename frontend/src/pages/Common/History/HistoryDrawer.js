@@ -15,8 +15,12 @@ export default function HistoryDrawer({
   permissionLevel,
   storePermissionSelected,
   selectedPermission,
-  storeStartDate,
-  storeEndDate
+  storeHistoryStartDate,
+  searchHistoryStartDate,
+  storeHistoryEndDate,
+  searchHistoryEndDate,
+  storeHistorySearchName,
+  searchHistoryName
 }) {
   return (
     <Drawer open={doShow} onClose={onClose} anchor="right">
@@ -30,8 +34,12 @@ export default function HistoryDrawer({
         permissionLevel={permissionLevel}
         storePermissionSelected={storePermissionSelected}
         selectedPermission={selectedPermission}
-        storeStartDate={storeStartDate}
-        storeEndDate={storeEndDate}
+        storeHistoryStartDate={storeHistoryStartDate}
+        searchHistoryStartDate={searchHistoryStartDate}
+        storeHistoryEndDate={storeHistoryEndDate}
+        searchHistoryEndDate={searchHistoryEndDate}
+        storeHistorySearchName={storeHistorySearchName}
+        searchHistoryName={searchHistoryName}
       />
     </Drawer>
   );

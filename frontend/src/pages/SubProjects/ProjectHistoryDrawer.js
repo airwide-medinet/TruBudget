@@ -19,10 +19,14 @@ function ProjectHistoryDrawer({
   fetchNextProjectHistoryPage,
   storePermissionSelected,
   selectedPermission,
-  storeStartDate,
-  storeEndDate
+  storeHistoryStartDate,
+  searchHistoryStartDate,
+  storeHistoryEndDate,
+  searchHistoryEndDate,
+  storeHistorySearchName,
+  searchHistoryName
 }) {
-  console.log(storeStartDate);
+  console.log(storeHistoryStartDate);
   return (
     <HistoryDrawer
       doShow={doShow}
@@ -36,8 +40,12 @@ function ProjectHistoryDrawer({
       permissionLevel={"project"}
       storePermissionSelected={storePermissionSelected}
       selectedPermission={selectedPermission}
-      storeStartDate={storeStartDate}
-      storeEndDate={storeEndDate}
+      storeHistoryStartDate={storeHistoryStartDate}
+      searchHistoryStartDate={searchHistoryStartDate}
+      storeHistoryEndDate={storeHistoryEndDate}
+      searchHistoryEndDate={searchHistoryEndDate}
+      storeHistorySearchName={storeHistorySearchName}
+      searchHistoryName={searchHistoryName}
     />
   );
 }
@@ -46,6 +54,9 @@ function mapStateToProps(state) {
   return {
     doShow: state.getIn(["detailview", "showHistory"]),
     events: state.getIn(["detailview", "historyItems"]),
+    searchHistoryStartDate: state.getIn(["detailview", "searchHistoryStartDate"]),
+    searchHistoryEndDate: state.getIn(["detailview", "searchHistoryEndDate"]),
+    searchHistoryName: state.getIn(["detailview", "searchHistoryName"]),
     nEventsTotal: state.getIn(["detailview", "totalHistoryItemCount"]),
     isLoading: state.getIn(["detailview", "isHistoryLoading"]),
     currentHistoryPage: state.getIn(["detailview", "currentHistoryPage"]),

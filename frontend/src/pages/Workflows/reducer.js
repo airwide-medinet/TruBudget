@@ -64,7 +64,8 @@ import {
   WORKFLOW_STATUS,
   WORKFLOWS_STORE_SELECTED_PERMISSION,
   WORKFLOWS_STORE_HISTORY_START_DATE,
-  WORKFLOWS_STORE_HISTORY_END_DATE
+  WORKFLOWS_STORE_HISTORY_END_DATE,
+  WORKFLOWS_STORE_HISTORY_SEARCH_NAME
 } from "./actions";
 
 const historyPageSize = 50;
@@ -149,8 +150,9 @@ const defaultState = fromJS({
   permittedToGrant: false,
   applyActions: true,
   selectedPermission: "",
-  searchHistoryStartDate: "01.01.2019",
-  searchHistoryEndDate: "01.01.2020"
+  searchHistoryStartDate: "2019-01-01",
+  searchHistoryEndDate: "2019-01-01",
+  searchHistoryName: ""
 });
 
 export default function detailviewReducer(state = defaultState, action) {
@@ -446,6 +448,8 @@ export default function detailviewReducer(state = defaultState, action) {
       return state.set("searchHistoryStartDate", fromJS(action.searchHistoryStartDate));
     case WORKFLOWS_STORE_HISTORY_END_DATE:
       return state.set("searchHistoryEndDate", fromJS(action.searchHistoryEndDate));
+    case WORKFLOWS_STORE_HISTORY_SEARCH_NAME:
+      return state.set("searchHistoryName", fromJS(action.searchHistoryName));
     default:
       return state;
   }

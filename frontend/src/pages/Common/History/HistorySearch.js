@@ -2,9 +2,12 @@ import React from "react";
 import { withStyles } from "@material-ui/core";
 import DatePicker from "../../Common/DatePicker";
 import DropDown from "../../Common/NewDropdown";
+import Searchbar from "../../Common/Searchbar";
 import MenuItem from "@material-ui/core/MenuItem";
 import TableCell from "@material-ui/core/TableCell";
 import strings from "../../../localizeStrings";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 
 const styles = {
   searchField: {
@@ -53,20 +56,66 @@ const getSubprojectMenuItems = projectedBudgets => {
   });
 };
 
-const HistorySearch = ({ permissionLevel, storePermissionSelected, storeStartDate, storeEndDate }) => {
+const HistorySearch = ({
+  permissionLevel,
+  storePermissionSelected,
+  storeHistoryStartDate,
+  storeHistoryEndDate,
+  searchHistoryStartDate,
+  searchHistoryEndDate,
+  storeHistorySearchName,
+  searchHistoryName
+}) => {
   const [permissionSelect, setPermissionSelect] = React.useState("");
   const handlePermissionSelect = value => {
     setPermissionSelect(value);
     storePermissionSelected(value);
   };
-  console.log(permissionLevel);
   const permissionList = keyMatch(strings.permissions, permissionLevel + "_");
-  console.log(permissionList);
+
+  // const [searchHistoryStartDate, setStartDate] = React.useState("");
+  // const handleStartDate = value => {
+  //   setStartDate(value);
+  //   storeHistoryStartDate(value);
+  // };
+  console.log(searchHistoryStartDate);
+
+  const resetSearchValues = () => {
+    setPermissionSelect("");
+    storePermissionSelected("");
+    storeHistorySearchName("");
+    storeHistoryStartDate("2019-01-01");
+    storeHistoryEndDate("2019-01-01");
+    console.log(searchHistoryStartDate);
+  };
 
   return (
-    <>
-      <DatePicker styles={styles.datepicker} label={"start"} onChange={value => storeStartDate(value)} />
-      <DatePicker styles={styles.datepicker} label={"end"} onChange={value => storeEndDate(value)} />
+    <div>
+      <DatePicker
+        styles={styles.datepicker}
+        label={"start"}
+        value={searchHistoryStartDate}
+        onChange={value => storeHistoryStartDate(value)}
+      />
+      <DatePicker
+        styles={styles.datepicker}
+        label={"end"}
+        value={searchHistoryEndDate}
+        onChange={value => storeHistoryEndDate(value)}
+      />
+      {/* <TextField
+        styles={styles.datepicker}
+        label="Search by name"
+        value={searchHistoryName}
+        onChange={value => storeHistorySearchName(value)}
+      /> */}
+      <Searchbar
+        previewText={"Search for name"}
+        storeSearchTerm={storeHistorySearchName}
+        searchTerm={searchHistoryName}
+        autoSearch={true}
+        isSearchBarDisplayedByDefault={true}
+      />
 
       <TableCell>
         <DropDown
@@ -80,7 +129,11 @@ const HistorySearch = ({ permissionLevel, storePermissionSelected, storeStartDat
           {getSubprojectMenuItems(permissionList)}
         </DropDown>
       </TableCell>
-    </>
+
+      <Button aria-label="cancel" data-test="reset" color="secondary" onClick={() => resetSearchValues()}>
+        Reset
+      </Button>
+    </div>
   );
 };
 

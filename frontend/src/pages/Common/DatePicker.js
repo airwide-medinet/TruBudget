@@ -23,7 +23,7 @@ import TextField from "@material-ui/core/TextField";
 //   }
 // };
 
-export default function DatePicker({ label, defaultValue = "2020-01-01", styles, formStyle, onChange }) {
+export default function DatePicker({ label, value = "", styles, formStyle, onChange }) {
   const classes = {};
 
   return (
@@ -33,7 +33,7 @@ export default function DatePicker({ label, defaultValue = "2020-01-01", styles,
         id="date"
         label={label}
         type="date"
-        defaultValue={defaultValue}
+        value={value}
         className={classes.textField}
         InputLabelProps={{
           shrink: true
