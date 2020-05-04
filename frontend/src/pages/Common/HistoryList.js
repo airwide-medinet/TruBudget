@@ -17,6 +17,9 @@ const styles = {
   list: {
     maxWidth: "350px",
     minWidth: "350px"
+  },
+  form: {
+    margin: "16px"
   }
 };
 
@@ -76,6 +79,7 @@ export default function HistoryList({
         label={showSearch ? "Close Searchbar" : "Open Searchbar"}
         labelPlacement="end"
         onChange={event => handleSearch(event)}
+        style={styles.form}
       />
       {showSearch ? (
         <HistorySearch
