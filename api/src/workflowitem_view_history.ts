@@ -5,11 +5,14 @@ import * as NotAuthenticated from "./http_errors/not_authenticated";
 import { AuthenticatedRequest } from "./httpd/lib";
 import { Ctx } from "./lib/ctx";
 import { isNonemptyString } from "./lib/validation";
+import * as Result from "./result";
 import { ServiceUser } from "./service/domain/organization/service_user";
 import * as Project from "./service/domain/workflow/project";
 import * as Subproject from "./service/domain/workflow/subproject";
 import * as Workflowitem from "./service/domain/workflow/workflowitem";
-import * as WorkflowitemTraceEvent from "./service/domain/workflow/workflowitem_trace_event";
+import { WorkflowitemTraceEvent } from "./service/domain/workflow/workflowitem_trace_event";
+import * as WorkflowitemHistory from "./service/domain/workflow/workflowitem_history_get";
+import VError = require("verror");
 
 function mkSwaggerSchema(server: FastifyInstance) {
   return {
@@ -103,13 +106,14 @@ function mkSwaggerSchema(server: FastifyInstance) {
 }
 
 interface Service {
-  getWorkflowitemTraceEvents(
+  getWorkflowitemHistory(
     ctx: Ctx,
     user: ServiceUser,
     projectId: Project.Id,
     subprojectId: Subproject.Id,
     workflowitemId: Workflowitem.Id,
-  ): Promise<WorkflowitemTraceEvent.WorkflowitemTraceEvent[]>;
+    filter: WorkflowitemHistory.Filter,
+  ): Promise<Result.Type<WorkflowitemTraceEvent[]>>;
 }
 
 export function addHttpHandler(server: FastifyInstance, urlPrefix: string, service: Service) {
@@ -188,14 +192,27 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
         return;
       }
 
+      const filter: WorkflowitemHistory.Filter = {
+        publisher: request.query.publisher,
+        startAt: request.query.startAt,
+        endAt: request.query.endAt,
+        eventType: request.query.eventType,
+      };
+
       try {
-        const events = await service.getWorkflowitemTraceEvents(
+        // Get all Events in project stream
+        const eventsResult = await service.getWorkflowitemHistory(
           ctx,
           user,
           projectId,
           subprojectId,
           workflowitemId,
+          filter,
         );
+        if (Result.isErr(eventsResult)) {
+          throw new VError(eventsResult, "workflowitem.viewHistory failed");
+        }
+        const events: WorkflowitemTraceEvent[] = eventsResult;
 
         const offsetIndex = offset < 0 ? Math.max(0, events.length + offset) : offset;
         const slice = events.slice(

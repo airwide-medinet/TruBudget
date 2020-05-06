@@ -1,14 +1,16 @@
 import { FastifyInstance } from "fastify";
-
 import { toHttpError } from "./http_errors";
 import * as NotAuthenticated from "./http_errors/not_authenticated";
 import { AuthenticatedRequest } from "./httpd/lib";
 import { Ctx } from "./lib/ctx";
 import { isNonemptyString } from "./lib/validation";
+import * as Result from "./result";
 import { ServiceUser } from "./service/domain/organization/service_user";
 import * as Project from "./service/domain/workflow/project";
 import * as Subproject from "./service/domain/workflow/subproject";
+import * as SubprojectHistory from "./service/domain/workflow/subproject_history_get";
 import { SubprojectTraceEvent } from "./service/domain/workflow/subproject_trace_event";
+import VError = require("verror");
 
 function mkSwaggerSchema(server: FastifyInstance) {
   return {
@@ -95,12 +97,13 @@ function mkSwaggerSchema(server: FastifyInstance) {
 }
 
 interface Service {
-  getSubprojectTraceEvents(
+  getSubprojectHistory(
     ctx: Ctx,
     user: ServiceUser,
     projectId: Project.Id,
     subprojectId: Subproject.Id,
-  ): Promise<SubprojectTraceEvent[]>;
+    filter: SubprojectHistory.Filter,
+  ): Promise<Result.Type<SubprojectTraceEvent[]>>;
 }
 
 export function addHttpHandler(server: FastifyInstance, urlPrefix: string, service: Service) {
@@ -166,8 +169,26 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
         return;
       }
 
+      const filter: SubprojectHistory.Filter = {
+        publisher: request.query.publisher,
+        startAt: request.query.startAt,
+        endAt: request.query.endAt,
+        eventType: request.query.eventType,
+      };
+
       try {
-        const events = await service.getSubprojectTraceEvents(ctx, user, projectId, subprojectId);
+        // Get all Events in subproject stream
+        const eventsResult = await service.getSubprojectHistory(
+          ctx,
+          user,
+          projectId,
+          subprojectId,
+          filter,
+        );
+        if (Result.isErr(eventsResult)) {
+          throw new VError(eventsResult, "subproject.viewHistory failed");
+        }
+        const events: SubprojectTraceEvent[] = eventsResult;
 
         const offsetIndex = offset < 0 ? Math.max(0, events.length + offset) : offset;
         const slice = events.slice(
