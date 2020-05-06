@@ -25,6 +25,7 @@ export default class ScrollingHistory extends React.Component {
     const {
       nEventsTotal,
       events,
+      resetHistory,
       fetchNext,
       hasMore,
       isLoading,
@@ -44,9 +45,9 @@ export default class ScrollingHistory extends React.Component {
         pageStart={0}
         initialLoad={false}
         useWindow={false}
-        loadMore={page => {
-          if (!isLoading && hasMore) fetchNext();
-        }}
+        // loadMore={page => {
+        //   if (!isLoading && hasMore) fetchNext();
+        // }}
         hasMore={hasMore}
         loader={
           <div className="loader" key={0} style={styles.loader}>
@@ -57,6 +58,8 @@ export default class ScrollingHistory extends React.Component {
         <HistoryList
           className="history-list"
           events={events}
+          resetHistory={resetHistory}
+          fetchNext={fetchNext}
           nEventsTotal={nEventsTotal}
           hasMore={hasMore}
           isLoading={isLoading}

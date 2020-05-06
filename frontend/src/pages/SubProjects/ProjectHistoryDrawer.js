@@ -9,13 +9,15 @@ import {
   storeSubPermissionSelected,
   storeSubSearchHistoryStartDate,
   storeSubSearchHistoryEndDate,
-  storeSubHistorySearchName
+  storeSubHistorySearchName,
+  resetHistory
 } from "./actions";
 
 function ProjectHistoryDrawer({
   projectId,
   doShow,
   events,
+  resetHistory,
   nEventsTotal,
   currentHistoryPage,
   lastHistoryPage,
@@ -32,13 +34,28 @@ function ProjectHistoryDrawer({
   storeSubHistorySearchName,
   searchHistoryName
 }) {
+  // React.useEffect(() => {
+  //   setEventItems(getEvents(events, getUserDisplayname));
+  // }, []);
+
+  // React.useEffect(() => {
+  //   setEventItems(getEvents(events, getUserDisplayname));
+  // }, []);
+
   return (
     <HistoryDrawer
       doShow={doShow}
       onClose={hideHistory}
       events={events}
+      resetHistory={resetHistory}
       nEventsTotal={nEventsTotal}
-      fetchNext={() => fetchNextProjectHistoryPage(projectId)}
+      fetchNext={() =>
+        fetchNextProjectHistoryPage(projectId, {
+          startAt: searchHistoryStartDate,
+          endAt: searchHistoryEndDate,
+          publisher: searchHistoryName
+        })
+      }
       hasMore={currentHistoryPage < lastHistoryPage}
       isLoading={isLoading}
       getUserDisplayname={getUserDisplayname}
@@ -64,6 +81,7 @@ function mapStateToProps(state) {
     searchHistoryEndDate: state.getIn(["detailview", "searchHistoryEndDate"]),
     searchHistoryName: state.getIn(["detailview", "searchHistoryName"]),
     nEventsTotal: state.getIn(["detailview", "totalHistoryItemCount"]),
+    // filter: state.getIn(["detailview", "filter"]),
     isLoading: state.getIn(["detailview", "isHistoryLoading"]),
     currentHistoryPage: state.getIn(["detailview", "currentHistoryPage"]),
     lastHistoryPage: state.getIn(["detailview", "lastHistoryPage"]),
@@ -74,7 +92,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hideHistory: () => dispatch(hideHistory()),
-    fetchNextProjectHistoryPage: projectId => dispatch(fetchNextProjectHistoryPage(projectId)),
+    resetHistory: () => dispatch(resetHistory()),
+    fetchNextProjectHistoryPage: (projectId, filter) => dispatch(fetchNextProjectHistoryPage(projectId, filter)),
     storeSubPermissionSelected: selectedPermission => dispatch(storeSubPermissionSelected(selectedPermission)),
     storeSubSearchHistoryStartDate: searchHistoryStartDate =>
       dispatch(storeSubSearchHistoryStartDate(searchHistoryStartDate)),

@@ -71,6 +71,8 @@ export const SUBPROJECTS_STORE_HISTORY_START_DATE = "SUBPROJECTS_STORE_HISTORY_S
 export const SUBPROJECTS_STORE_HISTORY_END_DATE = "SUBPROJECTS_STORE_HISTORY_END_DATE";
 export const SUBPROJECTS_STORE_HISTORY_SEARCH_NAME = "SUBPROJECTS_STORE_HISTORY_SEARCH_NAME";
 
+export const SUBPROJECTS_RESET_HISTORY = "SUBPROJECTS_RESET_HISTORY";
+
 export function fetchSubProjectPermissions(projectId, subprojectId, showLoading = false) {
   return {
     type: FETCH_SUBPROJECT_PERMISSIONS,
@@ -141,11 +143,12 @@ export function setTotalHistoryItemCount(count) {
   };
 }
 
-export function fetchNextProjectHistoryPage(projectId, showLoading = false) {
+export function fetchNextProjectHistoryPage(projectId, filter, showLoading = false) {
   return {
     type: FETCH_NEXT_PROJECT_HISTORY_PAGE,
     projectId,
-    showLoading
+    showLoading,
+    filter
   };
 }
 
@@ -377,5 +380,11 @@ export function storeSubHistorySearchName(searchHistoryName) {
   return {
     type: SUBPROJECTS_STORE_HISTORY_SEARCH_NAME,
     searchHistoryName
+  };
+}
+
+export function resetHistory() {
+  return {
+    type: SUBPROJECTS_RESET_HISTORY
   };
 }

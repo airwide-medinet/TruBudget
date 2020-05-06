@@ -43,7 +43,7 @@ const keyMatch = (object, search) => {
   for (key in result) {
     resultArray.push(Object.assign({ value: key }, { label: result[key] }));
   }
-  console.log(resultArray);
+  // console.log(resultArray);
   return resultArray;
 };
 const getSubprojectMenuItems = projectedBudgets => {
@@ -64,7 +64,8 @@ const HistorySearch = ({
   searchHistoryStartDate,
   searchHistoryEndDate,
   storeHistorySearchName,
-  searchHistoryName
+  searchHistoryName,
+  enableFilter
 }) => {
   const permissionList = keyMatch(strings.permissions, permissionLevel + "_");
 
@@ -93,7 +94,7 @@ const HistorySearch = ({
       />
 
       <Searchbar
-        previewText={"Search for name"}
+        previewText={"Search for publisher"}
         storeSearchTerm={storeHistorySearchName}
         searchTerm={searchHistoryName}
         autoSearch={true}
@@ -115,6 +116,9 @@ const HistorySearch = ({
 
       <Button aria-label="cancel" data-test="reset" color="secondary" onClick={() => resetSearchValues()}>
         Reset
+      </Button>
+      <Button aria-label="submit" data-test="reset" color="secondary" onClick={() => enableFilter()}>
+        Search
       </Button>
     </div>
   );

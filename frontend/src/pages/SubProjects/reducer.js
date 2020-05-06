@@ -36,7 +36,8 @@ import {
   SUBPROJECTS_STORE_SELECTED_PERMISSION,
   SUBPROJECTS_STORE_HISTORY_START_DATE,
   SUBPROJECTS_STORE_HISTORY_END_DATE,
-  SUBPROJECTS_STORE_HISTORY_SEARCH_NAME
+  SUBPROJECTS_STORE_HISTORY_SEARCH_NAME,
+  SUBPROJECTS_RESET_HISTORY
 } from "./actions";
 import { convertToURLQuery } from "../../helper";
 
@@ -266,6 +267,13 @@ export default function detailviewReducer(state = defaultState, action) {
       return state.set("searchHistoryEndDate", fromJS(action.searchHistoryEndDate));
     case SUBPROJECTS_STORE_HISTORY_SEARCH_NAME:
       return state.set("searchHistoryName", fromJS(action.searchHistoryName));
+    case SUBPROJECTS_RESET_HISTORY:
+      return state.merge({
+        historyItems: fromJS([]),
+        lastHistoryPage: defaultState.get("lastHistoryPage"),
+        currentHistoryPage: defaultState.get("currentHistoryPage"),
+        totalHistoryItemCount: defaultState.get("totalHistoryItemCount")
+      });
     default:
       return state;
   }

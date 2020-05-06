@@ -7,6 +7,7 @@ export default function HistoryDrawer({
   doShow,
   onClose,
   events,
+  resetHistory,
   nEventsTotal,
   fetchNext,
   hasMore,
@@ -26,6 +27,7 @@ export default function HistoryDrawer({
     <Drawer open={doShow} onClose={onClose} anchor="right">
       <ScrollingHistory
         events={events}
+        resetHistory={resetHistory}
         nEventsTotal={nEventsTotal}
         hasMore={hasMore}
         isLoading={isLoading}

@@ -23,22 +23,8 @@ const styles = {
   }
 };
 
-export default function HistoryList({
-  events,
-  nEventsTotal,
-  hasMore,
-  isLoading,
-  getUserDisplayname,
-  permissionLevel,
-  storePermissionSelected,
-  storeHistoryStartDate,
-  searchHistoryStartDate,
-  storeHistoryEndDate,
-  searchHistoryEndDate,
-  storeHistorySearchName,
-  searchHistoryName
-}) {
-  const eventItems = events.map((event, index) => {
+const getEvents = (events, getUserDisplayname) => {
+  return events.map((event, index) => {
     if (!(event.businessEvent && event.snapshot)) {
       // eslint-disable-next-line no-console
       console.warn("The event does not have a business event or snapshot and will not be displayed", event);
@@ -57,7 +43,32 @@ export default function HistoryList({
       </ListItem>
     );
   });
+};
 
+export default function HistoryList({
+  events,
+  resetHistory,
+  fetchNext,
+  nEventsTotal,
+  hasMore,
+  isLoading,
+  getUserDisplayname,
+  permissionLevel,
+  storePermissionSelected,
+  storeHistoryStartDate,
+  searchHistoryStartDate,
+  storeHistoryEndDate,
+  searchHistoryEndDate,
+  storeHistorySearchName,
+  searchHistoryName
+}) {
+  const [eventItems, setEventItems] = React.useState([]);
+
+  React.useEffect(() => {
+    setEventItems(getEvents(events, getUserDisplayname));
+  }, [events, getUserDisplayname]);
+
+  console.log(eventItems);
   const [showSearch, setShowSearch] = React.useState(false);
 
   const handleSearch = event => {
@@ -66,6 +77,16 @@ export default function HistoryList({
     storeHistorySearchName("");
     storeHistoryStartDate("");
     storeHistoryEndDate("");
+    setEventItems([]);
+  };
+  const enableFilter = () => {
+    // Deleting HistoryItems and Page index
+    resetHistory();
+    // New Fetch with Filterarguments
+    fetchNext();
+    setEventItems([]);
+    console.log("reseting FIRST");
+    console.log(searchHistoryStartDate);
   };
 
   return (
@@ -92,6 +113,7 @@ export default function HistoryList({
           searchHistoryEndDate={searchHistoryEndDate}
           storeHistorySearchName={storeHistorySearchName}
           searchHistoryName={searchHistoryName}
+          enableFilter={enableFilter}
         />
       ) : null}
 
