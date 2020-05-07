@@ -74,6 +74,5 @@ export const getHistory = async (
     );
   }
 
-  logger.debug(filter);
   return workflowitemTraceEvents;
 };

@@ -51,13 +51,9 @@ export const getHistory = async (
   }
 
   if (filter.startAt) {
-    subprojectTraceEvents = subprojectTraceEvents.filter((event) => {
-      console.log(event.businessEvent.time);
-      console.log(filter.startAt);
-      console.log(new Date(event.businessEvent.time) >= new Date(filter.startAt));
-      console.log("-------------------");
-      new Date(event.businessEvent.time) >= new Date(filter.startAt);
-    });
+    subprojectTraceEvents = subprojectTraceEvents.filter(
+      (event) => new Date(event.businessEvent.time) >= new Date(filter.startAt),
+    );
   }
 
   if (filter.endAt) {
@@ -73,6 +69,5 @@ export const getHistory = async (
     );
   }
 
-  logger.debug(filter);
   return subprojectTraceEvents;
 };

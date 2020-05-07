@@ -169,6 +169,37 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
         return;
       }
 
+      // ISO Timestamp example: 01.01.2020 or 2019-12-31T23:00:00.000Z
+      if (request.query.startAt !== undefined) {
+        let startAt: Date = new Date(request.query.startAt);
+        if (isNaN(startAt.getTime())) {
+          reply.status(400).send({
+            apiVersion: "1.0",
+            error: {
+              code: 400,
+              message: "if present, the query parameter `startAt` must be a valid ISO timestamp",
+            },
+          });
+          return;
+        }
+      }
+
+      if (request.query.endAt !== undefined) {
+        let endAt: Date = new Date(request.query.endAt);
+        console.log(endAt);
+        if (isNaN(endAt.getTime())) {
+          console.log(endAt);
+          reply.status(400).send({
+            apiVersion: "1.0",
+            error: {
+              code: 400,
+              message: "if present, the query parameter `endAt` must be a valid ISO timestamp",
+            },
+          });
+          return;
+        }
+      }
+
       const filter: SubprojectHistory.Filter = {
         publisher: request.query.publisher,
         startAt: request.query.startAt,
