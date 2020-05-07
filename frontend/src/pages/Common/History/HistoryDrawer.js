@@ -1,48 +1,54 @@
+import { withStyles } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import Typography from "@material-ui/core/Typography";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import SearchIcon from "@material-ui/icons/Search";
 import React from "react";
-
+import strings from "../../../localizeStrings";
+import HistorySearch from "./HistorySearch";
 import ScrollingHistory from "./ScrollingHistory";
+import useHistoryState from "./historyHook";
 
-export default function HistoryDrawer({
+const styles = {};
+
+const HistoryDrawer = ({
+  classes,
   doShow,
   onClose,
   events,
-  resetHistory,
   nEventsTotal,
-  fetchNext,
+  fetchNextHistoryEvents,
+  fetchFirstHistoryEvents,
   hasMore,
   isLoading,
-  getUserDisplayname,
-  permissionLevel,
-  storePermissionSelected,
-  selectedPermission,
-  storeHistoryStartDate,
-  searchHistoryStartDate,
-  storeHistoryEndDate,
-  searchHistoryEndDate,
-  storeHistorySearchName,
-  searchHistoryName
-}) {
+  getUserDisplayname
+}) => {
+  const [{ startAt, endAt, publisher, eventType }] = useHistoryState();
+
   return (
     <Drawer open={doShow} onClose={onClose} anchor="right">
+      <ExpansionPanel>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <SearchIcon />
+          <Typography>{strings.common.search}</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <HistorySearch fetchFirstHistoryEvents={fetchFirstHistoryEvents} />
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
       <ScrollingHistory
         events={events}
-        resetHistory={resetHistory}
         nEventsTotal={nEventsTotal}
         hasMore={hasMore}
         isLoading={isLoading}
         getUserDisplayname={getUserDisplayname}
-        fetchNext={fetchNext}
-        permissionLevel={permissionLevel}
-        storePermissionSelected={storePermissionSelected}
-        selectedPermission={selectedPermission}
-        storeHistoryStartDate={storeHistoryStartDate}
-        searchHistoryStartDate={searchHistoryStartDate}
-        storeHistoryEndDate={storeHistoryEndDate}
-        searchHistoryEndDate={searchHistoryEndDate}
-        storeHistorySearchName={storeHistorySearchName}
-        searchHistoryName={searchHistoryName}
+        fetchNext={() => fetchNextHistoryEvents({ startAt, endAt, publisher, eventType })}
       />
     </Drawer>
   );
-}
+};
+
+export default withStyles(styles)(HistoryDrawer);

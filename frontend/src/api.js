@@ -124,8 +124,14 @@ class Api {
     });
 
   viewProjectDetails = projectId => instance.get(`/project.viewDetails?projectId=${projectId}`);
-  viewProjectHistory = (projectId, offset, limit, filterArgument) =>
-    instance.get(`/project.viewHistory.v2?projectId=${projectId}&offset=${offset}&limit=${limit}${filterArgument}`);
+  viewProjectHistory = (projectId, offset, limit, filter) => {
+    let url = `/project.viewHistory.v2?projectId=${projectId}&offset=${offset}&limit=${limit}`;
+    // filter: startAt|endAt|publisher|eventType
+    for (const key in filter) {
+      url = url + `&${key}=${filter[key]}`;
+    }
+    return instance.get(url);
+  };
 
   listProjectIntents = projectId => instance.get(`/project.intent.listPermissions?projectId=${projectId}`);
 

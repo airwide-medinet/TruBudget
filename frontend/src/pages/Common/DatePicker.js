@@ -1,45 +1,28 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
+import { withStyles } from "@material-ui/core";
 
-// const useStyles = makeStyles(theme => ({
-//   container: {
-//     display: "flex",
-//     flexWrap: "wrap"
-//   },
-//   textField: {
-//     marginLeft: theme.spacing(1),
-//     marginRight: theme.spacing(1),
-//     width: 200
-//   }
-// }));
-// const styles = {
-//   field: {
-//     padding: "5px",
-//     marginLeft: "16px",
-//     width: "200px",
-//     display: "flex",
-//     flexDirection: "row"
-//   }
-// };
+const styles = {
+  form: {
+    marginTop: "12px"
+  }
+};
 
-export default function DatePicker({ label, value = "", styles, formStyle, onChange }) {
-  const classes = {};
-
+function DatePicker({ classes, name, label, value = "", onChange }) {
   return (
-    <form className={formStyle} noValidate>
+    <form className={classes.form} noValidate>
       <TextField
-        style={styles}
-        id="date"
+        name={name}
         label={label}
         type="date"
         value={value}
-        className={classes.textField}
         InputLabelProps={{
           shrink: true
         }}
-        onChange={event => onChange(event.target.value)}
+        onChange={onChange}
       />
     </form>
   );
 }
+
+export default withStyles(styles)(DatePicker);

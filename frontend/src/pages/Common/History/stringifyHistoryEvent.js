@@ -1,145 +1,10 @@
-import Avatar from "@material-ui/core/Avatar";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListSubheader from "@material-ui/core/ListSubheader";
-import dayjs from "dayjs";
-import React from "react";
 import _isEmpty from "lodash/isEmpty";
-import { formatString } from "../../helper";
-import { dateFormat } from "../../helper";
-import strings from "../../localizeStrings";
-import HistorySearch from "../Common/History/HistorySearch";
-
-const styles = {
-  list: {
-    maxWidth: "350px",
-    minWidth: "350px"
-  },
-  form: {
-    margin: "16px"
-  }
-};
-
-const getEvents = (events, getUserDisplayname) => {
-  return events.map((event, index) => {
-    if (!(event.businessEvent && event.snapshot)) {
-      // eslint-disable-next-line no-console
-      console.warn("The event does not have a business event or snapshot and will not be displayed", event);
-
-      return null;
-    }
-    const eventTime = event.businessEvent.time;
-    return (
-      <ListItem key={`${index}-${eventTime}`} className="history-item">
-        <Avatar alt={"test"} src="/lego_avatar_female2.jpg" />
-        <ListItemText
-          data-test={`history-item-${index}`}
-          primary={stringifyHistoryEvent(event.businessEvent, event.snapshot, getUserDisplayname)}
-          secondary={dayjs(eventTime).format(dateFormat())}
-        />
-      </ListItem>
-    );
-  });
-};
-
-export default function HistoryList({
-  events,
-  resetHistory,
-  fetchNext,
-  nEventsTotal,
-  hasMore,
-  isLoading,
-  getUserDisplayname,
-  permissionLevel,
-  storePermissionSelected,
-  storeHistoryStartDate,
-  searchHistoryStartDate,
-  storeHistoryEndDate,
-  searchHistoryEndDate,
-  storeHistorySearchName,
-  searchHistoryName
-}) {
-  const [eventItems, setEventItems] = React.useState([]);
-
-  React.useEffect(() => {
-    setEventItems(getEvents(events, getUserDisplayname));
-  }, [events, getUserDisplayname]);
-
-  console.log(eventItems);
-  const [showSearch, setShowSearch] = React.useState(false);
-
-  const handleSearch = event => {
-    setShowSearch(event.target.checked);
-    storePermissionSelected("");
-    storeHistorySearchName("");
-    storeHistoryStartDate("");
-    storeHistoryEndDate("");
-    setEventItems([]);
-  };
-  const enableFilter = () => {
-    // Deleting HistoryItems and Page index
-    resetHistory();
-    // New Fetch with Filterarguments
-    fetchNext();
-    setEventItems([]);
-    console.log("reseting FIRST");
-    console.log(searchHistoryStartDate);
-  };
-
-  return (
-    <List
-      data-test="history-list"
-      subheader={<ListSubheader disableSticky>{strings.common.history}</ListSubheader>}
-      style={styles.list}
-    >
-      <FormControlLabel
-        control={<Switch color="primary" />}
-        label={showSearch ? "Close Searchbar" : "Open Searchbar"}
-        labelPlacement="end"
-        onChange={event => handleSearch(event)}
-        style={styles.form}
-      />
-      {showSearch ? (
-        <HistorySearch
-          data-test="history-search"
-          permissionLevel={permissionLevel}
-          storePermissionSelected={storePermissionSelected}
-          storeHistoryStartDate={storeHistoryStartDate}
-          searchHistoryStartDate={searchHistoryStartDate}
-          storeHistoryEndDate={storeHistoryEndDate}
-          searchHistoryEndDate={searchHistoryEndDate}
-          storeHistorySearchName={storeHistorySearchName}
-          searchHistoryName={searchHistoryName}
-          enableFilter={enableFilter}
-        />
-      ) : null}
-
-      {!isLoading && nEventsTotal === 0 ? (
-        <ListItem key="no-element">
-          <Avatar alt={""} src="" />
-          <ListItemText primary="" secondary={strings.common.no_history} />
-        </ListItem>
-      ) : (
-        <div>
-          {eventItems}
-          {hasMore || isLoading ? null : (
-            <ListItem key="closing-element">
-              <Avatar alt={""} src="" />
-              <ListItemText primary="" secondary={strings.common.history_end} />
-            </ListItem>
-          )}
-        </div>
-      )}
-    </List>
-  );
-}
+import { formatString } from "../../../helper";
+import strings from "../../../localizeStrings";
 
 const formatPermission = data => `"${strings.permissions[data.replace(/[.]/g, "_")]}"` || `"${data.intent}"`;
 
-function stringifyHistoryEvent(businessEvent, snapshot, getUserDisplayname) {
+const stringifyHistoryEvent = (businessEvent, snapshot, getUserDisplayname) => {
   const createdBy = getUserDisplayname(businessEvent.publisher);
   const eventType = businessEvent.type;
   const displayName = snapshot.displayName || "";
@@ -247,4 +112,5 @@ function stringifyHistoryEvent(businessEvent, snapshot, getUserDisplayname) {
       console.log(`WARN: no handler for event type ${eventType}`);
       return eventType;
   }
-}
+};
+export default stringifyHistoryEvent;

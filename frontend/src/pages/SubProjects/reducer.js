@@ -37,7 +37,9 @@ import {
   SUBPROJECTS_STORE_HISTORY_START_DATE,
   SUBPROJECTS_STORE_HISTORY_END_DATE,
   SUBPROJECTS_STORE_HISTORY_SEARCH_NAME,
-  SUBPROJECTS_RESET_HISTORY
+  SUBPROJECTS_RESET_HISTORY,
+  FETCH_FIRST_PROJECT_HISTORY_PAGE,
+  FETCH_FIRST_PROJECT_HISTORY_PAGE_SUCCESS
 } from "./actions";
 import { convertToURLQuery } from "../../helper";
 
@@ -184,15 +186,22 @@ export default function detailviewReducer(state = defaultState, action) {
       return state.set("isSubProjectAdditionalDataShown", false);
     case FETCH_NEXT_PROJECT_HISTORY_PAGE:
       return state.set("isHistoryLoading", true);
+    case FETCH_FIRST_PROJECT_HISTORY_PAGE:
+      return state.set("isHistoryLoading", true);
     case SET_TOTAL_PROJECT_HISTORY_ITEM_COUNT:
       return state.merge({
         totalHistoryItemCount: action.totalHistoryItemsCount,
         lastHistoryPage: action.lastHistoryPage
       });
-
     case FETCH_NEXT_PROJECT_HISTORY_PAGE_SUCCESS:
       return state.merge({
         historyItems: state.get("historyItems").concat(fromJS(action.events).reverse()),
+        currentHistoryPage: action.currentHistoryPage,
+        isHistoryLoading: false
+      });
+    case FETCH_FIRST_PROJECT_HISTORY_PAGE_SUCCESS:
+      return state.merge({
+        historyItems: fromJS(action.events).reverse(),
         currentHistoryPage: action.currentHistoryPage,
         isHistoryLoading: false
       });

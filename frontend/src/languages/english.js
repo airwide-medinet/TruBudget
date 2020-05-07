@@ -71,6 +71,7 @@ const en = {
     projected_budget_exists: "Projected budget already exists",
     projected_budget: "Projected Budget",
     redacted: "Redacted",
+    reset: "Reset",
     revoke: "revoke",
     search: "Search",
     show_permissions: "Show Permissions",

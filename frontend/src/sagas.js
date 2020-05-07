@@ -108,6 +108,8 @@ import {
   FETCH_ALL_PROJECT_DETAILS_SUCCESS,
   FETCH_NEXT_PROJECT_HISTORY_PAGE,
   FETCH_NEXT_PROJECT_HISTORY_PAGE_SUCCESS,
+  FETCH_FIRST_PROJECT_HISTORY_PAGE,
+  FETCH_FIRST_PROJECT_HISTORY_PAGE_SUCCESS,
   FETCH_SUBPROJECT_PERMISSIONS,
   FETCH_SUBPROJECT_PERMISSIONS_FAILURE,
   FETCH_SUBPROJECT_PERMISSIONS_SUCCESS,
@@ -1016,12 +1018,41 @@ export function* fetchAllProjectDetailsSaga({ projectId, showLoading }) {
   }, showLoading);
 }
 
-export function* fetchNextProjectHistoryPageSaga({ projectId, showLoading, filter }) {
+export function* fetchFirstProjectHistoryPageSaga({ projectId, filter, showLoading }) {
   yield execute(function*() {
     const { currentHistoryPage, historyPageSize, totalHistoryItemCount } = yield select(getProjectHistoryState);
-    console.log("filter");
-    console.log(filter);
+
+    let offset = -historyPageSize;
+
+    const remainingItems = totalHistoryItemCount - currentHistoryPage * historyPageSize;
+    // If the remaining items are 0, it means that the total number of history items
+    // is a multiple of the page size and we need to fetch a whole page
+    const limit = remainingItems !== 0 ? remainingItems : historyPageSize;
+
+    const { historyItemsCount, events } = yield callApi(api.viewProjectHistory, projectId, offset, limit, filter);
+    const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
+    const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
+    if (isFirstPage) {
+      yield put({
+        type: SET_TOTAL_PROJECT_HISTORY_ITEM_COUNT,
+        totalHistoryItemsCount: historyItemsCount,
+        lastHistoryPage
+      });
+    }
+
+    yield put({
+      type: FETCH_FIRST_PROJECT_HISTORY_PAGE_SUCCESS,
+      events,
+      currentHistoryPage: currentHistoryPage + 1
+    });
+  }, showLoading);
+}
+
+export function* fetchNextProjectHistoryPageSaga({ projectId, filter, showLoading }) {
+  yield execute(function*() {
+    const { currentHistoryPage, historyPageSize, totalHistoryItemCount } = yield select(getProjectHistoryState);
     let offset = 0;
+
     if (totalHistoryItemCount === 0) {
       // Before the first call, we don't know how many history items there are
       // so we fetch a fixed number of the latest items
@@ -1040,18 +1071,7 @@ export function* fetchNextProjectHistoryPageSaga({ projectId, showLoading, filte
     // is a multiple of the page size and we need to fetch a whole page
     const limit = isLastPage && remainingItems !== 0 ? remainingItems : historyPageSize;
 
-    let filterArgument = "";
-    if (filter.publisher !== "") filterArgument += `&publisher=${filter.publisher}`;
-    if (filter.startAt !== "") filterArgument += `&startAt=${filter.startAt}`;
-    if (filter.endAt !== "") filterArgument += `&startEnd=${filter.endAt}`;
-    console.log(filterArgument);
-    const { historyItemsCount, events } = yield callApi(
-      api.viewProjectHistory,
-      projectId,
-      offset,
-      limit,
-      filterArgument
-    );
+    const { historyItemsCount, events } = yield callApi(api.viewProjectHistory, projectId, offset, limit, filter);
     const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
     const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
     if (isFirstPage) {
@@ -2139,6 +2159,7 @@ export default function* rootSaga() {
       yield takeEvery(REVOKE_PERMISSION, revokePermissionsSaga),
       yield takeEvery(ASSIGN_PROJECT, assignProjectSaga),
       yield takeEvery(FETCH_NEXT_PROJECT_HISTORY_PAGE, fetchNextProjectHistoryPageSaga),
+      yield takeEvery(FETCH_FIRST_PROJECT_HISTORY_PAGE, fetchFirstProjectHistoryPageSaga),
       yield takeEvery(CLOSE_PROJECT, closeProjectSaga),
       yield takeEvery(FETCH_ALL_PROJECT_DETAILS, fetchAllProjectDetailsSaga),
 
