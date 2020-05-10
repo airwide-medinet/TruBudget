@@ -1,4 +1,4 @@
-import { withStyles } from "@material-ui/core";
+import { withStyles, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import React from "react";
 import strings from "../../../localizeStrings";
@@ -10,6 +10,11 @@ const styles = {
     marginTop: "24px"
   },
 
+  formControl: {
+    marginTop: "24px",
+    width: "-webkit-fill-available"
+  },
+
   datepicker: {
     padding: "5px",
     marginLeft: "19px",
@@ -19,7 +24,7 @@ const styles = {
   }
 };
 
-const HistorySearch = ({ classes, fetchFirstHistoryEvents }) => {
+const HistorySearch = ({ classes, fetchFirstHistoryEvents, users }) => {
   const [{ startAt, endAt, publisher, eventType }, mergeState, clearState] = useHistoryState();
 
   const onChange = e => {
@@ -31,8 +36,8 @@ const HistorySearch = ({ classes, fetchFirstHistoryEvents }) => {
     <div>
       <DatePicker className={classes.datepicker} label={"start"} name="startAt" value={startAt} onChange={onChange} />
       <DatePicker className={classes.datepicker} label={"end"} name="endAt" value={endAt} onChange={onChange} />
-
-      {/* publisher search (User picker) */}
+      {renderPublisherSelection({ classes, publisher, onChange, users })}
+      {/* // TODO: render permission selection since there are only certain types of events */}
       {/* permission search (User picker) */}
       <div className={classes.searchActions}>
         <Button aria-label="reset" data-test="reset" color="secondary" onClick={clearState}>
@@ -48,6 +53,33 @@ const HistorySearch = ({ classes, fetchFirstHistoryEvents }) => {
         </Button>
       </div>
     </div>
+  );
+};
+
+const renderMenuItems = users => {
+  let menuItems = [];
+  users.forEach(user => {
+    if (!user.isGroup) {
+      menuItems.push(
+        <MenuItem key={`menu-item-${user.id}`} value={user.id}>
+          {user.displayName}
+        </MenuItem>
+      );
+    }
+  });
+  return menuItems;
+};
+
+const renderPublisherSelection = ({ classes, publisher, onChange, users }) => {
+  const userList = renderMenuItems(users);
+
+  return (
+    <FormControl className={classes.formControl}>
+      <InputLabel>Publisher</InputLabel>
+      <Select value={publisher} name="publisher" onChange={onChange}>
+        {userList}
+      </Select>
+    </FormControl>
   );
 };
 

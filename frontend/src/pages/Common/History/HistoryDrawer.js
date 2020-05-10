@@ -24,7 +24,8 @@ const HistoryDrawer = ({
   fetchFirstHistoryEvents,
   hasMore,
   isLoading,
-  getUserDisplayname
+  getUserDisplayname,
+  users
 }) => {
   const [{ startAt, endAt, publisher, eventType }] = useHistoryState();
 
@@ -36,7 +37,7 @@ const HistoryDrawer = ({
           <Typography>{strings.common.search}</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <HistorySearch fetchFirstHistoryEvents={fetchFirstHistoryEvents} />
+          <HistorySearch fetchFirstHistoryEvents={fetchFirstHistoryEvents} users={users} />
         </ExpansionPanelDetails>
       </ExpansionPanel>
       <ScrollingHistory

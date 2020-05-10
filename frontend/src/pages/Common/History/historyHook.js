@@ -19,8 +19,9 @@ const mergeState = newState => {
 };
 
 const clearState = () => {
+  state = defaultState;
   listeners.forEach(listener => {
-    listener(defaultState);
+    listener(state);
   });
 };
 

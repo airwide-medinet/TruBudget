@@ -17,7 +17,9 @@ function ProjectHistoryDrawer({
   isLoading,
   getUserDisplayname,
   hideHistory,
-  fetchNextProjectHistoryPage
+  fetchNextProjectHistoryPage,
+  fetchFirstProjectHistoryPage,
+  users
 }) {
   return (
     <HistoryDrawer
@@ -30,12 +32,14 @@ function ProjectHistoryDrawer({
       hasMore={currentHistoryPage < lastHistoryPage}
       isLoading={isLoading}
       getUserDisplayname={getUserDisplayname}
+      users={users}
     />
   );
 }
 
 function mapStateToProps(state) {
   return {
+    users: state.getIn(["login", "user"]),
     doShow: state.getIn(["detailview", "showHistory"]),
     events: state.getIn(["detailview", "historyItems"]),
     nEventsTotal: state.getIn(["detailview", "totalHistoryItemCount"]),

@@ -1,4 +1,5 @@
 import axios from "axios";
+import _isEmpty from "lodash/isEmpty";
 
 const devMode = process.env.NODE_ENV === "development";
 const API_VERSION = "1.0";
@@ -128,7 +129,9 @@ class Api {
     let url = `/project.viewHistory.v2?projectId=${projectId}&offset=${offset}&limit=${limit}`;
     // filter: startAt|endAt|publisher|eventType
     for (const key in filter) {
-      url = url + `&${key}=${filter[key]}`;
+      if (!_isEmpty(filter[key])) {
+        url = url + `&${key}=${filter[key]}`;
+      }
     }
     return instance.get(url);
   };
