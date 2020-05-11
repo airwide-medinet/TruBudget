@@ -1,8 +1,9 @@
-import { withStyles, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import { withStyles, MenuItem } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import React from "react";
 import strings from "../../../localizeStrings";
 import DatePicker from "../../Common/DatePicker";
+import Dropdown from "../../Common/NewDropdown";
 import useHistoryState from "./historyHook";
 
 const styles = {
@@ -21,7 +22,8 @@ const styles = {
     minWidth: 200,
     display: "flex",
     flexDirection: "row"
-  }
+  },
+  dropdown: { minWidth: 200, marginRight: "16px" }
 };
 
 const HistorySearch = ({ classes, fetchFirstHistoryEvents, users }) => {
@@ -48,31 +50,43 @@ const HistorySearch = ({ classes, fetchFirstHistoryEvents, users }) => {
     fetchFirstHistoryEvents({});
   };
 
+  const getMenuItems = items => {
+    return items.map(item => {
+      return (
+        <MenuItem key={item.displayName} value={item.id}>
+          {item.displayName}
+        </MenuItem>
+      );
+    });
+  };
+
   return (
     <div>
       <DatePicker className={classes.datepicker} label={"start"} name="startAt" value={startAt} onChange={onChange} />
       <DatePicker className={classes.datepicker} label={"end"} name="endAt" value={endAt} onChange={onChange} />
-      {/* {renderPublisherSelection({ classes, publisher, onChange, users })}
-      {renderEventTypeSelection({ classes, eventType, onChange, project_eventType })} */}
 
-      {renderSelection({
-        classes,
-        value: publisher,
-        name: "publisher",
-        label: "Publisher",
-        onChange,
-        selectionList: users
-      })}
-      {renderSelection({
-        classes,
-        value: eventType,
-        name: "eventType",
-        label: "Permission type",
-        onChange,
-        selectionList: project_eventType
-      })}
-      {/* // TODO: render permission selection since there are only certain types of events */}
-      {/* permission search (User picker) */}
+      <Dropdown
+        style={styles.dropdown}
+        value={publisher}
+        floatingLabel="Publisher"
+        onChange={value => mergeState({ publisher: value })}
+        id="publisher"
+        disabled={false}
+      >
+        {getMenuItems(users)}
+      </Dropdown>
+
+      <Dropdown
+        style={styles.dropdown}
+        value={eventType}
+        floatingLabel="Event type"
+        onChange={value => mergeState({ eventType: value })}
+        id="eventType"
+        disabled={false}
+      >
+        {getMenuItems(project_eventType)}
+      </Dropdown>
+
       <div className={classes.searchActions}>
         <Button aria-label="reset" data-test="reset" color="secondary" onClick={onReset}>
           {strings.common.reset}
@@ -91,59 +105,6 @@ const HistorySearch = ({ classes, fetchFirstHistoryEvents, users }) => {
         </Button>
       </div>
     </div>
-  );
-};
-
-const renderMenuItems = items => {
-  let menuItems = [];
-  items.forEach(item => {
-    if (!item.isGroup) {
-      menuItems.push(
-        <MenuItem key={`menu-item-${item.id}`} value={item.id}>
-          {item.displayName}
-        </MenuItem>
-      );
-    }
-  });
-  return menuItems;
-};
-
-// const renderPublisherSelection = ({ classes, publisher, onChange, users }) => {
-//   const userList = renderMenuItems(users);
-
-//   return (
-//     <FormControl className={classes.formControl}>
-//       <InputLabel>Publisher</InputLabel>
-//       <Select value={publisher} name="publisher" onChange={onChange}>
-//         {userList}
-//       </Select>
-//     </FormControl>
-//   );
-// };
-
-// const renderEventTypeSelection = ({ classes, eventType, onChange, project_eventType }) => {
-//   const eventTypeList = renderMenuItems(project_eventType);
-
-//   return (
-//     <FormControl className={classes.formControl}>
-//       <InputLabel>Permission type</InputLabel>
-//       <Select value={eventType} name="eventType" onChange={onChange}>
-//         {eventTypeList}
-//       </Select>
-//     </FormControl>
-//   );
-// };
-
-const renderSelection = ({ classes, value, name, label, onChange, selectionList }) => {
-  const menuItemsList = renderMenuItems(selectionList);
-
-  return (
-    <FormControl className={classes.formControl}>
-      <InputLabel>{label}</InputLabel>
-      <Select value={value} name={name} onChange={onChange}>
-        {menuItemsList}
-      </Select>
-    </FormControl>
   );
 };
 
