@@ -32,6 +32,11 @@ const HistorySearch = ({ classes, fetchFirstHistoryEvents, users }) => {
     mergeState({ [name]: value });
   };
 
+  const onReset = () => {
+    clearState();
+    fetchFirstHistoryEvents({});
+  };
+
   return (
     <div>
       <DatePicker className={classes.datepicker} label={"start"} name="startAt" value={startAt} onChange={onChange} />
@@ -40,7 +45,7 @@ const HistorySearch = ({ classes, fetchFirstHistoryEvents, users }) => {
       {/* // TODO: render permission selection since there are only certain types of events */}
       {/* permission search (User picker) */}
       <div className={classes.searchActions}>
-        <Button aria-label="reset" data-test="reset" color="secondary" onClick={clearState}>
+        <Button aria-label="reset" data-test="reset" color="secondary" onClick={onReset}>
           {strings.common.reset}
         </Button>
         <Button
