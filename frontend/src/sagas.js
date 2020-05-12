@@ -161,6 +161,8 @@ import {
   FETCH_ALL_SUBPROJECT_DETAILS_SUCCESS,
   FETCH_NEXT_SUBPROJECT_HISTORY_PAGE,
   FETCH_NEXT_SUBPROJECT_HISTORY_PAGE_SUCCESS,
+  FETCH_FIRST_SUBPROJECT_HISTORY_PAGE,
+  FETCH_FIRST_SUBPROJECT_HISTORY_PAGE_SUCCESS,
   FETCH_WORKFLOWITEM_PERMISSIONS,
   FETCH_WORKFLOWITEM_PERMISSIONS_FAILURE,
   FETCH_WORKFLOWITEM_PERMISSIONS_SUCCESS,
@@ -1086,6 +1088,37 @@ export function* fetchNextProjectHistoryPageSaga({ projectId, filter, showLoadin
   }, showLoading);
 }
 
+export function* fetchFirstSubprojectHistoryPageSaga({ projectId, subprojectId, filter, showLoading }) {
+  yield execute(function*() {
+    const { currentHistoryPage, historyPageSize, totalHistoryItemCount } = yield select(getSubprojectHistoryState);
+    let offset = -historyPageSize;
+    const limit = historyPageSize;
+
+    const { historyItemsCount, events } = yield callApi(
+      api.viewSubProjectHistory,
+      projectId,
+      subprojectId,
+      offset,
+      limit,
+      filter
+    );
+    const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
+    const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
+    if (isFirstPage) {
+      yield put({
+        type: SET_TOTAL_SUBPROJECT_HISTORY_ITEM_COUNT,
+        totalHistoryItemsCount: historyItemsCount,
+        lastHistoryPage
+      });
+    }
+
+    yield put({
+      type: FETCH_FIRST_SUBPROJECT_HISTORY_PAGE_SUCCESS,
+      events,
+      currentHistoryPage: currentHistoryPage + 1
+    });
+  }, showLoading);
+}
 export function* fetchNextSubprojectHistoryPageSaga({ projectId, subprojectId, showLoading }) {
   yield execute(function*() {
     const { currentHistoryPage, historyPageSize, totalHistoryItemCount } = yield select(getSubprojectHistoryState);
@@ -2166,6 +2199,7 @@ export default function* rootSaga() {
       yield takeLatest(FETCH_SUBPROJECT_PERMISSIONS, fetchSubProjectPermissionsSaga),
       yield takeEvery(GRANT_SUBPROJECT_PERMISSION, grantSubProjectPermissionsSaga),
       yield takeEvery(FETCH_NEXT_SUBPROJECT_HISTORY_PAGE, fetchNextSubprojectHistoryPageSaga),
+      yield takeEvery(FETCH_FIRST_SUBPROJECT_HISTORY_PAGE, fetchFirstSubprojectHistoryPageSaga),
       yield takeEvery(REVOKE_SUBPROJECT_PERMISSION, revokeSubProjectPermissionsSaga),
       yield takeEvery(CLOSE_SUBPROJECT, closeSubprojectSaga),
       yield takeEvery(ASSIGN_SUBPROJECT, assignSubprojectSaga),

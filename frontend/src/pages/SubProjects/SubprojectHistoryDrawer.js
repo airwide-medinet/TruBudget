@@ -4,12 +4,14 @@ import { connect } from "react-redux";
 import { toJS } from "../../helper";
 import HistoryDrawer from "../Common/History/HistoryDrawer";
 import { hideHistory } from "../Notifications/actions";
+import { getSubprojectEventTypes } from "../Common/History/eventTypes";
 import {
-  fetchNextSubprojectHistoryPage,
   storeWorkflowsPermissionSelected,
   storeWorkflowSearchHistoryStartDate,
   storeWorkflowSearchHistoryEndDate,
-  storeWorkflowSearchHistoryName
+  storeWorkflowSearchHistoryName,
+  fetchNextSubprojectHistoryPage,
+  fetchFirstSubprojectHistoryPage
 } from "../Workflows/actions";
 
 function SubprojectHistoryDrawer({
@@ -21,43 +23,35 @@ function SubprojectHistoryDrawer({
   isLoading,
   getUserDisplayname,
   hideHistory,
-  fetchNextSubprojectHistoryPage,
+
   currentHistoryPage,
   lastHistoryPage,
-  storeWorkflowsPermissionSelected,
-  storeWorkflowSearchHistoryStartDate,
-  storeWorkflowSearchHistoryEndDate,
-  storeWorkflowSearchHistoryName,
-  selectedPermission,
-  searchHistoryStartDate,
-  searchHistoryEndDate,
-  searchHistoryName
+  fetchNextSubprojectHistoryPage,
+  fetchFirstSubprojectHistoryPage,
+  users,
+  subprojectEventTypes = getSubprojectEventTypes()
 }) {
+  console.log(getSubprojectEventTypes());
   return (
     <HistoryDrawer
       doShow={doShow}
       onClose={hideHistory}
       events={events}
       nEventsTotal={nEventsTotal}
-      fetchNext={() => fetchNextSubprojectHistoryPage(projectId, subprojectId)}
+      fetchNextHistoryEvents={filter => fetchNextSubprojectHistoryPage(projectId, subprojectId, filter)}
+      fetchFirstHistoryEvents={filter => fetchFirstSubprojectHistoryPage(projectId, subprojectId, filter)}
       hasMore={currentHistoryPage < lastHistoryPage}
       isLoading={isLoading}
       getUserDisplayname={getUserDisplayname}
-      permissionLevel={"subproject"}
-      storePermissionSelected={storeWorkflowsPermissionSelected}
-      selectedPermission={selectedPermission}
-      storeHistoryStartDate={storeWorkflowSearchHistoryStartDate}
-      searchHistoryStartDate={searchHistoryStartDate}
-      storeHistoryEndDate={storeWorkflowSearchHistoryEndDate}
-      searchHistoryEndDate={searchHistoryEndDate}
-      storeHistorySearchName={storeWorkflowSearchHistoryName}
-      searchHistoryName={searchHistoryName}
+      users={users}
+      eventTypes={subprojectEventTypes}
     />
   );
 }
 
 function mapStateToProps(state) {
   return {
+    users: state.getIn(["login", "user"]),
     doShow: state.getIn(["workflow", "showHistory"]),
     events: state.getIn(["workflow", "historyItems"]),
     searchHistoryStartDate: state.getIn(["workflow", "searchHistoryStartDate"]),
@@ -74,8 +68,11 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hideHistory: () => dispatch(hideHistory()),
-    fetchNextSubprojectHistoryPage: (projectId, subprojectId) =>
-      dispatch(fetchNextSubprojectHistoryPage(projectId, subprojectId)),
+    fetchNextSubprojectHistoryPage: (projectId, subprojectId, filter) =>
+      dispatch(fetchNextSubprojectHistoryPage(projectId, subprojectId, filter)),
+    fetchFirstSubprojectHistoryPage: (projectId, subprojectId, filter) =>
+      dispatch(fetchFirstSubprojectHistoryPage(projectId, subprojectId, filter)),
+
     storeWorkflowsPermissionSelected: selectedPermission =>
       dispatch(storeWorkflowsPermissionSelected(selectedPermission)),
     storeWorkflowSearchHistoryStartDate: searchHistoryStartDate =>

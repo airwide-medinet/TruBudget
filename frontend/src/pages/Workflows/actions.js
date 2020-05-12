@@ -59,6 +59,8 @@ export const OPEN_HISTORY_SUCCESS = "OPEN_HISTORY_SUCCESS";
 export const SET_TOTAL_SUBPROJECT_HISTORY_ITEM_COUNT = "SET_TOTAL_SUBPROJECT_HISTORY_ITEM_COUNT";
 export const FETCH_NEXT_SUBPROJECT_HISTORY_PAGE = "FETCH_NEXT_SUBPROJECT_HISTORY_PAGE";
 export const FETCH_NEXT_SUBPROJECT_HISTORY_PAGE_SUCCESS = "FETCH_NEXT_SUBPROJECT_HISTORY_PAGE_SUCCESS";
+export const FETCH_FIRST_SUBPROJECT_HISTORY_PAGE = "FETCH_FIRST_SUBPROJECT_HISTORY_PAGE";
+export const FETCH_FIRST_SUBPROJECT_HISTORY_PAGE_SUCCESS = "FETCH_FIRST_SUBPROJECT_HISTORY_PAGE_SUCCESS";
 
 export const ENABLE_BUDGET_EDIT = "ENABLE_BUDGET_EDIT";
 export const POST_SUBPROJECT_EDIT = "POST_SUBPROJECT_EDIT";
@@ -151,11 +153,22 @@ export function setTotalHistoryItemCount(count) {
   };
 }
 
-export function fetchNextSubprojectHistoryPage(projectId, subprojectId, showLoading = false) {
+export function fetchNextSubprojectHistoryPage(projectId, subprojectId, filter = {}, showLoading = false) {
   return {
     type: FETCH_NEXT_SUBPROJECT_HISTORY_PAGE,
     projectId,
     subprojectId,
+    filter,
+    showLoading
+  };
+}
+
+export function fetchFirstSubprojectHistoryPage(projectId, subprojectId, filter = {}, showLoading = false) {
+  return {
+    type: FETCH_FIRST_SUBPROJECT_HISTORY_PAGE,
+    projectId,
+    subprojectId,
+    filter,
     showLoading
   };
 }

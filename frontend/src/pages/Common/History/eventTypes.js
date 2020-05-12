@@ -1,6 +1,6 @@
 import strings from "../../../localizeStrings";
 
-export const projectEventTypes = [
+export const getPrrojectEventTypes = () => [
   { id: "project_created", displayName: "Project created" },
   { id: "project_updated", displayName: "Project updated" },
   { id: "project_assigned", displayName: "Project assigned" },
@@ -11,7 +11,7 @@ export const projectEventTypes = [
   { id: "project_projected_budget_deleted", displayName: "Project budget closed" }
 ];
 
-export const subprojectEventType = [
+export const getSubprojectEventTypes = () => [
   { id: "subproject_created", displayName: "Subproject created" },
   { id: "subproject_updated", displayName: "Subproject updated" },
   { id: "subproject_assigned", displayName: "Subproject assigned" },
@@ -22,7 +22,7 @@ export const subprojectEventType = [
   { id: "subproject_projected_budget_deleted", displayName: "Subproject budget closed" }
 ];
 
-export const workflowitemsEventType = [
+export const getWorkflowitemsEventTypes = () => [
   { id: "workflowitem_created", displayName: "Workflowitem  created" },
   { id: "workflowitem_updated", displayName: "Workflowitem  updated" },
   { id: "workflowitem_assigned", displayName: "Workflowitem  assigned" },

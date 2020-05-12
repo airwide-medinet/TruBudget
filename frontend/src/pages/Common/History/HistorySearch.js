@@ -26,18 +26,9 @@ const styles = {
   dropdown: { minWidth: 200, marginRight: "16px" }
 };
 
-const HistorySearch = ({ classes, fetchFirstHistoryEvents, users }) => {
-  const project_eventType = [
-    { id: "project_created", displayName: "Project created" },
-    { id: "project_updated", displayName: "Project updated" },
-    { id: "project_assigned", displayName: "Project assigned" },
-    { id: "project_closed", displayName: "Project closed" },
-    { id: "project_permission_granted", displayName: "Project permisision granted" },
-    { id: "project_permission_revoked", displayName: "Project permission revoked" },
-    { id: "project_projected_budget_updated", displayName: "Project budget updated" },
-    { id: "project_projected_budget_deleted", displayName: "Project budget closed" }
-  ];
-
+const HistorySearch = ({ classes, fetchFirstHistoryEvents, users, eventTypes }) => {
+  console.log(users);
+  console.log(eventTypes);
   const [{ startAt, endAt, publisher, eventType }, mergeState, clearState] = useHistoryState();
 
   const onChange = e => {
@@ -84,7 +75,7 @@ const HistorySearch = ({ classes, fetchFirstHistoryEvents, users }) => {
         id="eventType"
         disabled={false}
       >
-        {getMenuItems(project_eventType)}
+        {getMenuItems(eventTypes)}
       </Dropdown>
 
       <div className={classes.searchActions}>
@@ -98,6 +89,7 @@ const HistorySearch = ({ classes, fetchFirstHistoryEvents, users }) => {
           onClick={() => {
             console.log(publisher);
             console.log(eventType);
+            console.log(fetchFirstHistoryEvents);
             fetchFirstHistoryEvents({ startAt, endAt, publisher, eventType });
           }}
         >

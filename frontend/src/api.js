@@ -133,6 +133,7 @@ class Api {
         url = url + `&${key}=${filter[key]}`;
       }
     }
+    console.log(url);
     return instance.get(url);
   };
 
@@ -173,10 +174,17 @@ class Api {
   viewSubProjectDetails = (projectId, subprojectId) =>
     instance.get(`/subproject.viewDetails?projectId=${projectId}&subprojectId=${subprojectId}`);
 
-  viewSubProjectHistory = (projectId, subprojectId, offset, limit) =>
-    instance.get(
-      `/subproject.viewHistory.v2?projectId=${projectId}&subprojectId=${subprojectId}&offset=${offset}&limit=${limit}`
-    );
+  viewSubProjectHistory = (projectId, subprojectId, offset, limit, filter) => {
+    let url = `/subproject.viewHistory.v2?projectId=${projectId}&subprojectId=${subprojectId}&offset=${offset}&limit=${limit}`;
+    // filter: startAt|endAt|publisher|eventType
+    for (const key in filter) {
+      if (!_isEmpty(filter[key])) {
+        url = url + `&${key}=${filter[key]}`;
+      }
+    }
+    console.log(url);
+    return instance.get(url);
+  };
 
   viewWorkflowitemHistory = (projectId, subprojectId, workflowitemId, offset, limit) =>
     instance.get(
