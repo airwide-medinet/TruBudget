@@ -28,10 +28,14 @@ const HistoryDrawer = ({
   users,
   eventTypes
 }) => {
-  const [{ startAt, endAt, publisher, eventType }] = useHistoryState();
+  const [{ startAt, endAt, publisher, eventType }, mergeState, clearState] = useHistoryState();
+  const closeAndReset = () => {
+    onClose();
+    clearState();
+  };
 
   return (
-    <Drawer open={doShow} onClose={onClose} anchor="right">
+    <Drawer open={doShow} onClose={closeAndReset} anchor="right">
       <ExpansionPanel>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
           <SearchIcon />
