@@ -184,6 +184,8 @@ import {
 import {
   FETCH_NEXT_WORKFLOWITEM_HISTORY_PAGE,
   FETCH_NEXT_WORKFLOWITEM_HISTORY_PAGE_SUCCESS,
+  FETCH_FIRST_WORKFLOWITEM_HISTORY_PAGE,
+  FETCH_FIRST_WORKFLOWITEM_HISTORY_PAGE_SUCCESS,
   SET_TOTAL_WORKFLOWITEM_HISTORY_ITEM_COUNT
 } from "./pages/Workflows/WorkflowitemHistoryTab/actions";
 
@@ -322,8 +324,9 @@ function* callApi(func, ...args) {
   // TODO dont set the environment on each call
   const prefix = env === "Test" ? "/test" : "/prod";
   yield call(api.setBaseUrl, prefix);
-  const { data } = yield call(func, ...args);
-  return data;
+  const data = yield call(func, ...args);
+  console.log(data);
+  return data.data;
 }
 
 let loadingCounter = 0;
@@ -1091,7 +1094,7 @@ export function* fetchNextProjectHistoryPageSaga({ projectId, filter, showLoadin
 export function* fetchFirstSubprojectHistoryPageSaga({ projectId, subprojectId, filter, showLoading }) {
   yield execute(function*() {
     const { currentHistoryPage, historyPageSize, totalHistoryItemCount } = yield select(getSubprojectHistoryState);
-    let offset = -historyPageSize;
+    const offset = -historyPageSize;
     const limit = historyPageSize;
 
     const { historyItemsCount, events } = yield callApi(
@@ -1119,7 +1122,7 @@ export function* fetchFirstSubprojectHistoryPageSaga({ projectId, subprojectId, 
     });
   }, showLoading);
 }
-export function* fetchNextSubprojectHistoryPageSaga({ projectId, subprojectId, showLoading }) {
+export function* fetchNextSubprojectHistoryPageSaga({ projectId, subprojectId, filter, showLoading }) {
   yield execute(function*() {
     const { currentHistoryPage, historyPageSize, totalHistoryItemCount } = yield select(getSubprojectHistoryState);
 
@@ -1147,7 +1150,8 @@ export function* fetchNextSubprojectHistoryPageSaga({ projectId, subprojectId, s
       projectId,
       subprojectId,
       offset,
-      limit
+      limit,
+      filter
     );
     const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
     const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
@@ -1167,7 +1171,53 @@ export function* fetchNextSubprojectHistoryPageSaga({ projectId, subprojectId, s
   }, showLoading);
 }
 
-export function* fetchNextWorkflowitemHistoryPageSaga({ projectId, subprojectId, workflowitemId, showLoading }) {
+export function* fetchFirstWorkflowitemHistoryPageSaga({
+  projectId,
+  subprojectId,
+  workflowitemId,
+  filter,
+  showLoading
+}) {
+  yield execute(function*() {
+    const { currentHistoryPage, historyPageSize, totalHistoryItemCount } = yield select(getWorkflowitemHistoryState);
+
+    const offset = -historyPageSize;
+    const limit = historyPageSize;
+
+    const { historyItemsCount, events } = yield callApi(
+      api.viewWorkflowitemHistory,
+      projectId,
+      subprojectId,
+      workflowitemId,
+      offset,
+      limit,
+      filter
+    );
+    const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
+    const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
+    if (isFirstPage) {
+      yield put({
+        type: SET_TOTAL_WORKFLOWITEM_HISTORY_ITEM_COUNT,
+        totalHistoryItemsCount: historyItemsCount,
+        lastHistoryPage
+      });
+    }
+
+    yield put({
+      type: FETCH_FIRST_WORKFLOWITEM_HISTORY_PAGE_SUCCESS,
+      events,
+      currentHistoryPage: currentHistoryPage + 1
+    });
+  }, showLoading);
+}
+
+export function* fetchNextWorkflowitemHistoryPageSaga({
+  projectId,
+  subprojectId,
+  workflowitemId,
+  filter,
+  showLoading
+}) {
   yield execute(function*() {
     const { currentHistoryPage, historyPageSize, totalHistoryItemCount } = yield select(getWorkflowitemHistoryState);
 
@@ -1196,7 +1246,8 @@ export function* fetchNextWorkflowitemHistoryPageSaga({ projectId, subprojectId,
       subprojectId,
       workflowitemId,
       offset,
-      limit
+      limit,
+      filter
     );
     const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
     const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
@@ -2218,6 +2269,7 @@ export default function* rootSaga() {
       yield takeEvery(SHOW_WORKFLOW_PREVIEW, fetchWorkflowActionsSaga),
       yield takeEvery(SUBMIT_BATCH_FOR_WORKFLOW, submitBatchForWorkflowSaga),
       yield takeEvery(FETCH_NEXT_WORKFLOWITEM_HISTORY_PAGE, fetchNextWorkflowitemHistoryPageSaga),
+      yield takeEvery(FETCH_FIRST_WORKFLOWITEM_HISTORY_PAGE, fetchFirstWorkflowitemHistoryPageSaga),
 
       // Notifications
       yield takeEvery(FETCH_ALL_NOTIFICATIONS, fetchNotificationsSaga),

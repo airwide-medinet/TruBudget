@@ -6,7 +6,7 @@ import HistoryDrawer from "../Common/History/HistoryDrawer";
 import { hideHistory } from "../Notifications/actions";
 // TODO: cleanup not needed actions
 import { fetchNextProjectHistoryPage, fetchFirstProjectHistoryPage } from "./actions";
-import { getPrrojectEventTypes } from "../Common/History/eventTypes";
+import { getProjectEventTypes } from "../Common/History/eventTypes";
 
 function ProjectHistoryDrawer({
   projectId,
@@ -21,7 +21,7 @@ function ProjectHistoryDrawer({
   fetchNextProjectHistoryPage,
   fetchFirstProjectHistoryPage,
   users,
-  projectEventTypes = getPrrojectEventTypes()
+  projectEventTypes = getProjectEventTypes()
 }) {
   return (
     <HistoryDrawer

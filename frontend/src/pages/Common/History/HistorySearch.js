@@ -84,7 +84,7 @@ const HistorySearch = ({ classes, fetchFirstHistoryEvents, users, eventTypes }) 
         </Button>
         <Button
           aria-label="search"
-          data-test="reset"
+          data-test="search"
           color="secondary"
           onClick={() => {
             console.log(publisher);

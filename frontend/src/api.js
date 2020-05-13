@@ -186,10 +186,17 @@ class Api {
     return instance.get(url);
   };
 
-  viewWorkflowitemHistory = (projectId, subprojectId, workflowitemId, offset, limit) =>
-    instance.get(
-      `/workflowitem.viewHistory?projectId=${projectId}&subprojectId=${subprojectId}&workflowitemId=${workflowitemId}&offset=${offset}&limit=${limit}`
-    );
+  viewWorkflowitemHistory = (projectId, subprojectId, workflowitemId, offset, limit, filter) => {
+    let url = `/workflowitem.viewHistory?projectId=${projectId}&subprojectId=${subprojectId}&workflowitemId=${workflowitemId}&offset=${offset}&limit=${limit}`;
+    // filter: startAt|endAt|publisher|eventType
+    for (const key in filter) {
+      if (!_isEmpty(filter[key])) {
+        url = url + `&${key}=${filter[key]}`;
+      }
+    }
+    console.log(url);
+    instance.get(url);
+  };
 
   updateProjectBudgetProjected = (projectId, organization, currencyCode, value) =>
     instance.post(`/project.budget.updateProjected`, {

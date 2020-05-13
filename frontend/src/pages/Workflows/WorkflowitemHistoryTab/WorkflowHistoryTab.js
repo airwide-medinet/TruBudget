@@ -1,68 +1,81 @@
 import React from "react";
 import { connect } from "react-redux";
-
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import Typography from "@material-ui/core/Typography";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import SearchIcon from "@material-ui/icons/Search";
 import { toJS } from "../../../helper";
 import ScrollingHistory from "../../Common/History/ScrollingHistory";
+import HistorySearch from "../../Common/History/HistorySearch";
+import useHistoryState from "../../Common/History/historyHook";
+import strings from "../../../localizeStrings";
+import { getWorkflowitemEventTypes } from "../../Common/History/eventTypes";
 import {
   fetchNextWorkflowitemHistoryPage,
-  resetWorkflowitemHistory,
-  storeWorkflowitemHistorySearchStartDate,
-  storeWorkflowitemHistorySearchEndDate,
-  storeWorkflowitemHistorySearchName
+  fetchFirstWorkflowitemHistoryPage,
+  resetWorkflowitemHistory
 } from "./actions";
 
-class WorkflowitemHistoryTab extends React.Component {
-  componentWillUnmount() {
-    this.props.resetWorkflowitemHistory();
-  }
-
-  render() {
-    const {
-      nEventsTotal,
-      historyItems,
-      fetchNextWorkflowitemHistoryPage,
-      currentHistoryPage,
-      lastHistoryPage,
-      projectId,
-      subprojectId,
-      workflowitemId,
-      isLoading,
-      getUserDisplayname,
-      storeWorkflowitemHistorySearchStartDate,
-      storeWorkflowitemHistorySearchEndDate,
-      storeWorkflowitemHistorySearchName,
-      searchHistoryStartDate,
-      searchHistoryEndDate,
-      searchHistoryName
-    } = this.props;
-    console.log(storeWorkflowitemHistorySearchStartDate);
-    return (
+const WorkflowitemHistoryTab = ({
+  users,
+  nEventsTotal,
+  events,
+  fetchNextWorkflowitemHistoryPage,
+  currentHistoryPage,
+  lastHistoryPage,
+  projectId,
+  subprojectId,
+  workflowitemId,
+  isLoading,
+  getUserDisplayname
+}) => {
+  const workflowitemEventTypes = getWorkflowitemEventTypes();
+  console.log(users);
+  console.log(workflowitemEventTypes);
+  const [{ startAt, endAt, publisher, eventType }] = useHistoryState();
+  return (
+    <>
+      <ExpansionPanel>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <SearchIcon />
+          <Typography>{strings.common.search}</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <HistorySearch
+            fetchFirstHistoryEvents={filter =>
+              fetchFirstWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId, filter)
+            }
+            users={users}
+            eventTypes={workflowitemEventTypes}
+          />
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
       <ScrollingHistory
-        events={historyItems}
+        events={events}
         nEventsTotal={nEventsTotal}
         hasMore={currentHistoryPage < lastHistoryPage}
         isLoading={isLoading}
         getUserDisplayname={getUserDisplayname}
-        fetchNext={() => fetchNextWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId)}
-        initialLoad={true}
-        storeHistoryStartDate={storeWorkflowitemHistorySearchStartDate}
-        searchHistoryStartDate={searchHistoryStartDate}
-        storeHistoryEndDate={storeWorkflowitemHistorySearchEndDate}
-        searchHistoryEndDate={searchHistoryEndDate}
-        storeHistorySearchName={storeWorkflowitemHistorySearchName}
-        searchHistoryName={searchHistoryName}
+        fetchNext={() =>
+          fetchNextWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId, {
+            startAt,
+            endAt,
+            publisher,
+            eventType
+          })
+        }
       />
-    );
-  }
-}
+    </>
+  );
+};
 
 function mapStateToProps(state) {
   return {
-    historyItems: state.getIn(["workflowitemDetails", "historyItems"]),
+    users: state.getIn(["login", "user"]),
+    events: state.getIn(["workflowitemDetails", "historyItems"]),
     nEventsTotal: state.getIn(["workflowitemDetails", "totalHistoryItemCount"]),
-    searchHistoryStartDate: state.getIn(["workflowitemDetails", "searchHistoryStartDate"]),
-    searchHistoryEndDate: state.getIn(["workflowitemDetails", "searchHistoryEndDate"]),
-    searchHistoryName: state.getIn(["workflowitemDetails", "searchHistoryName"]),
     isLoading: state.getIn(["workflowitemDetails", "isHistoryLoading"]),
     currentHistoryPage: state.getIn(["workflowitemDetails", "currentHistoryPage"]),
     lastHistoryPage: state.getIn(["workflowitemDetails", "lastHistoryPage"]),
@@ -73,14 +86,10 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     resetWorkflowitemHistory: () => dispatch(resetWorkflowitemHistory()),
-    fetchNextWorkflowitemHistoryPage: (projectId, subprojectId, workflowitemId) =>
-      dispatch(fetchNextWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId)),
-    storeWorkflowitemHistorySearchStartDate: searchHistoryStartDate =>
-      dispatch(storeWorkflowitemHistorySearchStartDate(searchHistoryStartDate)),
-    storeWorkflowitemHistorySearchEndDate: searchHistoryEndDate =>
-      dispatch(storeWorkflowitemHistorySearchEndDate(searchHistoryEndDate)),
-    storeWorkflowitemHistorySearchName: searchHistoryName =>
-      dispatch(storeWorkflowitemHistorySearchName(searchHistoryName))
+    fetchNextWorkflowitemHistoryPage: (projectId, subprojectId, workflowitemId, filter) =>
+      dispatch(fetchNextWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId, filter)),
+    fetchFirstWorkflowitemHistoryPage: (projectId, subprojectId, workflowitemId, filter) =>
+      dispatch(fetchFirstWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId, filter))
   };
 }
 

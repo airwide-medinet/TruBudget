@@ -28,7 +28,7 @@ const HistoryDrawer = ({
   users,
   eventTypes
 }) => {
-  const [{ startAt, endAt, publisher, eventType }, mergeState, clearState] = useHistoryState();
+  const [{ startAt, endAt, publisher, eventType }, , clearState] = useHistoryState();
   const closeAndReset = () => {
     onClose();
     clearState();
