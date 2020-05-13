@@ -58,40 +58,46 @@ function mkSwaggerSchema(server: FastifyInstance) {
           description: "changes related to the given workflowitem in chronological order",
           type: "object",
           properties: {
-            historyItemsCount: {
-              type: "number",
-              description:
-                "Total number of history items (greater or equal to the number of returned items)",
-              example: 10,
-            },
-            events: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  entityId: { type: "string", example: "d0e8c69eg298c87e3899119e025eff1f" },
-                  entityType: { type: "string", example: "subproject" },
-                  businessEvent: {
+            apiVersion: { type: "string", example: "1.0" },
+            data: {
+              type: "object",
+              properties: {
+                historyItemsCount: {
+                  type: "number",
+                  description:
+                    "Total number of history items (greater or equal to the number of returned items)",
+                  example: 10,
+                },
+                events: {
+                  type: "array",
+                  items: {
                     type: "object",
-                    additionalProperties: true,
                     properties: {
-                      type: { type: "string" },
-                      source: { type: "string" },
-                      time: { type: "string" },
-                      publisher: { type: "string" },
-                    },
-                    example: {
-                      type: "workflowitem_closed",
-                      source: "http",
-                      time: "2018-09-05T13:37:25.775Z",
-                      publisher: "jdoe",
-                    },
-                  },
-                  snapshot: {
-                    type: "object",
-                    additionalProperties: true,
-                    properties: {
-                      displayName: { type: "string", example: "Build a bridge" },
+                      entityId: { type: "string", example: "d0e8c69eg298c87e3899119e025eff1f" },
+                      entityType: { type: "string", example: "subproject" },
+                      businessEvent: {
+                        type: "object",
+                        additionalProperties: true,
+                        properties: {
+                          type: { type: "string" },
+                          source: { type: "string" },
+                          time: { type: "string" },
+                          publisher: { type: "string" },
+                        },
+                        example: {
+                          type: "workflowitem_closed",
+                          source: "http",
+                          time: "2018-09-05T13:37:25.775Z",
+                          publisher: "jdoe",
+                        },
+                      },
+                      snapshot: {
+                        type: "object",
+                        additionalProperties: true,
+                        properties: {
+                          displayName: { type: "string", example: "Build a bridge" },
+                        },
+                      },
                     },
                   },
                 },
@@ -209,9 +215,7 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
 
       if (request.query.endAt !== undefined) {
         let endAt: Date = new Date(request.query.endAt);
-        console.log(endAt);
         if (isNaN(endAt.getTime())) {
-          console.log(endAt);
           reply.status(400).send({
             apiVersion: "1.0",
             error: {
@@ -253,8 +257,11 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
 
         const code = 200;
         const body = {
-          historyItemsCount: events.length,
-          events: slice,
+          apiVersion: "1.0",
+          data: {
+            historyItemsCount: events.length,
+            events: slice,
+          },
         };
         reply.status(code).send(body);
       } catch (err) {

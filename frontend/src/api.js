@@ -133,7 +133,6 @@ class Api {
         url = url + `&${key}=${filter[key]}`;
       }
     }
-    console.log(url);
     return instance.get(url);
   };
 
@@ -182,7 +181,6 @@ class Api {
         url = url + `&${key}=${filter[key]}`;
       }
     }
-    console.log(url);
     return instance.get(url);
   };
 
@@ -194,8 +192,7 @@ class Api {
         url = url + `&${key}=${filter[key]}`;
       }
     }
-    console.log(url);
-    instance.get(url);
+    return instance.get(url);
   };
 
   updateProjectBudgetProjected = (projectId, organization, currencyCode, value) =>

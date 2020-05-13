@@ -22,6 +22,7 @@ const WorkflowitemHistoryTab = ({
   users,
   nEventsTotal,
   events,
+  fetchFirstWorkflowitemHistoryPage,
   fetchNextWorkflowitemHistoryPage,
   currentHistoryPage,
   lastHistoryPage,
@@ -32,8 +33,6 @@ const WorkflowitemHistoryTab = ({
   getUserDisplayname
 }) => {
   const workflowitemEventTypes = getWorkflowitemEventTypes();
-  console.log(users);
-  console.log(workflowitemEventTypes);
   const [{ startAt, endAt, publisher, eventType }] = useHistoryState();
   return (
     <>

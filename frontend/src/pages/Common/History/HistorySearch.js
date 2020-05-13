@@ -27,8 +27,6 @@ const styles = {
 };
 
 const HistorySearch = ({ classes, fetchFirstHistoryEvents, users, eventTypes }) => {
-  console.log(users);
-  console.log(eventTypes);
   const [{ startAt, endAt, publisher, eventType }, mergeState, clearState] = useHistoryState();
 
   const onChange = e => {
@@ -87,9 +85,6 @@ const HistorySearch = ({ classes, fetchFirstHistoryEvents, users, eventTypes }) 
           data-test="search"
           color="secondary"
           onClick={() => {
-            console.log(publisher);
-            console.log(eventType);
-            console.log(fetchFirstHistoryEvents);
             fetchFirstHistoryEvents({ startAt, endAt, publisher, eventType });
           }}
         >

@@ -31,7 +31,6 @@ function SubprojectHistoryDrawer({
   users,
   subprojectEventTypes = getSubprojectEventTypes()
 }) {
-  console.log(getSubprojectEventTypes());
   return (
     <HistoryDrawer
       doShow={doShow}

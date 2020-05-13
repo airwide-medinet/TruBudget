@@ -325,7 +325,6 @@ function* callApi(func, ...args) {
   const prefix = env === "Test" ? "/test" : "/prod";
   yield call(api.setBaseUrl, prefix);
   const data = yield call(func, ...args);
-  console.log(data);
   return data.data;
 }
 
@@ -1030,7 +1029,8 @@ export function* fetchFirstProjectHistoryPageSaga({ projectId, filter, showLoadi
     let offset = -historyPageSize;
     const limit = historyPageSize;
 
-    const { historyItemsCount, events } = yield callApi(api.viewProjectHistory, projectId, offset, limit, filter);
+    const { data } = yield callApi(api.viewProjectHistory, projectId, offset, limit, filter);
+    const { historyItemsCount, events } = data;
     const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
     const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
     if (isFirstPage) {
@@ -1072,7 +1072,8 @@ export function* fetchNextProjectHistoryPageSaga({ projectId, filter, showLoadin
     // is a multiple of the page size and we need to fetch a whole page
     const limit = isLastPage && remainingItems !== 0 ? remainingItems : historyPageSize;
 
-    const { historyItemsCount, events } = yield callApi(api.viewProjectHistory, projectId, offset, limit, filter);
+    const { data } = yield callApi(api.viewProjectHistory, projectId, offset, limit, filter);
+    const { historyItemsCount, events } = data;
     const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
     const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
     if (isFirstPage) {
@@ -1097,14 +1098,8 @@ export function* fetchFirstSubprojectHistoryPageSaga({ projectId, subprojectId, 
     const offset = -historyPageSize;
     const limit = historyPageSize;
 
-    const { historyItemsCount, events } = yield callApi(
-      api.viewSubProjectHistory,
-      projectId,
-      subprojectId,
-      offset,
-      limit,
-      filter
-    );
+    const { data } = yield callApi(api.viewSubProjectHistory, projectId, subprojectId, offset, limit, filter);
+    const { historyItemsCount, events } = data;
     const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
     const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
     if (isFirstPage) {
@@ -1145,14 +1140,8 @@ export function* fetchNextSubprojectHistoryPageSaga({ projectId, subprojectId, f
     // is a multiple of the page size and we need to fetch a whole page
     const limit = isLastPage && remainingItems !== 0 ? remainingItems : historyPageSize;
 
-    const { historyItemsCount, events } = yield callApi(
-      api.viewSubProjectHistory,
-      projectId,
-      subprojectId,
-      offset,
-      limit,
-      filter
-    );
+    const { data } = yield callApi(api.viewSubProjectHistory, projectId, subprojectId, offset, limit, filter);
+    const { historyItemsCount, events } = data;
     const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
     const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
     if (isFirstPage) {
@@ -1184,7 +1173,7 @@ export function* fetchFirstWorkflowitemHistoryPageSaga({
     const offset = -historyPageSize;
     const limit = historyPageSize;
 
-    const { historyItemsCount, events } = yield callApi(
+    const { data } = yield callApi(
       api.viewWorkflowitemHistory,
       projectId,
       subprojectId,
@@ -1193,6 +1182,7 @@ export function* fetchFirstWorkflowitemHistoryPageSaga({
       limit,
       filter
     );
+    const { historyItemsCount, events } = data;
     const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
     const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
     if (isFirstPage) {
@@ -1239,8 +1229,7 @@ export function* fetchNextWorkflowitemHistoryPageSaga({
     // If the remaining items are 0, it means that the total number of history items
     // is a multiple of the page size and we need to fetch a whole page
     const limit = isLastPage && remainingItems > 0 ? remainingItems : historyPageSize;
-
-    const { historyItemsCount, events } = yield callApi(
+    const { data } = yield callApi(
       api.viewWorkflowitemHistory,
       projectId,
       subprojectId,
@@ -1249,6 +1238,7 @@ export function* fetchNextWorkflowitemHistoryPageSaga({
       limit,
       filter
     );
+    const { historyItemsCount, events } = data;
     const lastHistoryPage = historyPageSize !== 0 ? Math.ceil(historyItemsCount / historyPageSize) : 1;
     const isFirstPage = totalHistoryItemCount === 0 && historyItemsCount !== 0;
     if (isFirstPage) {
