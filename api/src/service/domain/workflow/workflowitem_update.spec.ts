@@ -30,6 +30,7 @@ const baseWorkflowitem: Workflowitem = {
   permissions: { "workflowitem.update": [alice, bob, charlie].map(x => x.id) },
   log: [],
   additionalData: {},
+  type: "general",
 };
 const baseRepository = {
   getUsersForIdentity: async identity => {

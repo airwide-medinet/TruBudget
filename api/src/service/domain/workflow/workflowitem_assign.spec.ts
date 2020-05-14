@@ -30,6 +30,7 @@ const baseWorkflowitem: Workflowitem = {
   permissions: { "workflowitem.assign": [alice, bob, charlie].map(x => x.id) },
   log: [],
   additionalData: {},
+  type: "general",
 };
 
 describe("assign workflowitem: authorization", () => {

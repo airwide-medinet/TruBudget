@@ -15,6 +15,8 @@ import { WorkflowitemTraceEvent, workflowitemTraceEventSchema } from "./workflow
 
 export type Id = string;
 
+export type Type = "general" | "restricted";
+
 export const idSchema = Joi.string().max(32);
 
 export interface Workflowitem {
@@ -37,6 +39,7 @@ export interface Workflowitem {
   log: WorkflowitemTraceEvent[];
   // Additional information (key-value store), e.g. external IDs:
   additionalData: object;
+  type: Type;
 }
 
 export interface RedactedWorkflowitem {
@@ -58,6 +61,7 @@ export interface RedactedWorkflowitem {
   permissions: {};
   log: WorkflowitemTraceEvent[];
   additionalData: {};
+  type: Type;
 }
 
 export type ScrubbedWorkflowitem = Workflowitem | RedactedWorkflowitem;
@@ -136,6 +140,9 @@ const schema = Joi.object().keys({
     .required()
     .items(workflowitemTraceEventSchema),
   additionalData: AdditionalData.schema.required(),
+  type: Joi.string()
+  .valid("general", "restricted")
+  .required(),
 });
 
 export function validate(input: any): Result.Type<Workflowitem> {
@@ -178,6 +185,7 @@ export function redact(workflowitem: Workflowitem): RedactedWorkflowitem {
     permissions: {},
     log: redactLog(workflowitem.log),
     additionalData: {},
+    type: workflowitem.type,
   };
 }
 

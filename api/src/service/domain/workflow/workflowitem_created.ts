@@ -31,6 +31,7 @@ interface InitialData {
   permissions: Permissions;
   // Additional information (key-value store), e.g. external IDs:
   additionalData: object;
+  type: "general" | "restricted";
 }
 
 const initialDataSchema = Joi.object({
@@ -54,6 +55,9 @@ const initialDataSchema = Joi.object({
     .required(),
   permissions: permissionsSchema.required(),
   additionalData: AdditionalData.schema.required(),
+  type: Joi.string()
+  .valid("general", "restricted")
+  .required(),
 }).options({ stripUnknown: true });
 
 export interface Event {
@@ -132,6 +136,7 @@ export function createFrom(ctx: Ctx, event: Event): Result.Type<Workflowitem.Wor
     log: [],
     // Additional information (key-value store), e.g. external IDs:
     additionalData: initialData.additionalData,
+    type: initialData.type,
   };
 
   return Result.mapErr(

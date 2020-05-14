@@ -32,6 +32,7 @@ describe("Create workflowitem", () => {
       subprojectId: "dummy-subproject",
       displayName: "test",
       amountType: "N/A",
+      type: "general",
     };
 
     const result = await WorkflowitemCreate.createWorkflowitem(ctx, user, data, {

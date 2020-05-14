@@ -52,6 +52,7 @@ export interface Workflowitem {
   documents?: Document[];
   permissions: Permissions;
   log: HistoryEvent[];
+  type: "general" | "restricted";
 }
 
 export type ScrubbedWorkflowitem = Workflowitem | RedactedWorkflowitem;
@@ -71,6 +72,7 @@ export interface RedactedWorkflowitem {
   documents?: null;
   permissions: null;
   log: null;
+  type: "general" | "restricted";
 }
 
 export interface User {

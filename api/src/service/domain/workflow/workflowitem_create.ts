@@ -34,6 +34,7 @@ export interface RequestData {
   assignee?: string;
   documents?: UploadedDocument[];
   additionalData?: object;
+  type: "general" | "restricted";
 }
 
 const requestDataSchema = Joi.object({
@@ -52,6 +53,7 @@ const requestDataSchema = Joi.object({
   assignee: Joi.string(),
   documents: Joi.array().items(uploadedDocumentSchema),
   additionalData: AdditionalData.schema,
+  type: Joi.string().valid("general", "restricted").required(),
 });
 
 export function validate(input: any): Result.Type<RequestData> {
@@ -105,6 +107,7 @@ export async function createWorkflowitem(
       documents,
       permissions: newDefaultPermissionsFor(creatingUser.id),
       additionalData: reqData.additionalData || {},
+      type: reqData.type || "general",
     },
   );
 

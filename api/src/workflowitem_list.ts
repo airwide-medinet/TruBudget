@@ -66,6 +66,7 @@ function mkSwaggerSchema(server: FastifyInstance) {
                           billingDate: { type: "string", example: "2018-12-11T00:00:00.000Z" },
                           exchangeRate: { type: "string", example: "1.0" },
                           additionalData: { type: "object", additionalProperties: true },
+                          type: { type: "string", example: "general" },
                           documents: {
                             type: "array",
                             items: {
@@ -112,6 +113,7 @@ interface ExposedWorkflowitem {
     exchangeRate: string;
     documents: [{ id: string; hash: string }];
     additionalData: object;
+    type: "general" | "restricted";
   };
 }
 
@@ -175,6 +177,7 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
               exchangeRate: workflowitem.exchangeRate,
               documents: workflowitem.documents,
               additionalData: workflowitem.additionalData,
+              type: workflowitem.type,
             },
           };
         });

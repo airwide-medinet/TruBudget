@@ -31,6 +31,7 @@ interface RequestBodyV1 {
     exchangeRate?: string;
     documents?: UploadedDocument[];
     additionalData?: object;
+    type: "general" | "restricted";
   };
 }
 
@@ -50,6 +51,7 @@ const requestBodyV1Schema = Joi.object({
     exchangeRate: conversionRateSchema,
     documents: Joi.array().items(Joi.object().keys({ id: Joi.string(), base64: Joi.string() })),
     additionalData: Joi.object(),
+    type: Joi.valid("general", "restricted"),
   }).required(),
 });
 
@@ -107,6 +109,7 @@ function mkSwaggerSchema(server: FastifyInstance) {
                 },
               },
               additionalData: { type: "object", additionalProperties: true },
+              type: { type: "string", example: "general" },
             },
           },
         },
@@ -190,6 +193,7 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
         exchangeRate: bodyResult.data.exchangeRate,
         additionalData: bodyResult.data.additionalData,
         documents: bodyResult.data.documents,
+        type: bodyResult.data.type,
       };
 
       service
