@@ -1,8 +1,7 @@
 version: "3"
 services:
   blockchain-master:
-    build:
-      context: ../blockchain
+    image: trubudget/blockchain:latest
     environment:
       RPC_PORT: 8000
       ORGANIZATION: ACMECorp
