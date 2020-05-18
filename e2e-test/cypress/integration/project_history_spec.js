@@ -35,7 +35,7 @@ describe("Project's history", function() {
     // Update project to create new history event
     cy.visit(`/projects`);
     cy.get(`[data-test=project-card-${projectId}]`)
-      // select all buttons which has an attribute data-test which value begins with pp-button
+      // select all buttons which has an attribute data-test which value begins with pe-button
       .find("button[data-test^='pe-button']")
       .click();
     cy.get("[data-test=nameinput] input").type("-changed");

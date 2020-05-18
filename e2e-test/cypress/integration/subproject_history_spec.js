@@ -39,7 +39,7 @@ describe("Subproject's history", function() {
     // Update subproject to create new history event
     cy.visit(`/projects/${projectId}`);
     cy.get(`[data-test=ssp-table]`)
-      // select all buttons which has an attribute data-test which value begins with pp-button
+      // select all buttons which has an attribute data-test which value begins with subproject-edit-button-
       .find("button[data-test^='subproject-edit-button-']")
       .click();
     cy.get("[data-test=nameinput] input").type("-changed");
