@@ -1,45 +1,79 @@
 import React from "react";
 import { connect } from "react-redux";
-
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import Typography from "@material-ui/core/Typography";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import SearchIcon from "@material-ui/icons/Search";
 import { toJS } from "../../../helper";
 import ScrollingHistory from "../../Common/History/ScrollingHistory";
-import { fetchNextWorkflowitemHistoryPage, resetWorkflowitemHistory } from "./actions";
+import HistorySearch from "../../Common/History/HistorySearch";
+import useHistoryState from "../../Common/History/historyHook";
+import strings from "../../../localizeStrings";
+import { getWorkflowitemEventTypes } from "../../Common/History/eventTypes";
+import {
+  fetchNextWorkflowitemHistoryPage,
+  fetchFirstWorkflowitemHistoryPage,
+  resetWorkflowitemHistory
+} from "./actions";
 
-class WorkflowitemHistoryTab extends React.Component {
-  componentWillUnmount() {
-    this.props.resetWorkflowitemHistory();
-  }
-
-  render() {
-    const {
-      nEventsTotal,
-      historyItems,
-      fetchNextWorkflowitemHistoryPage,
-      currentHistoryPage,
-      lastHistoryPage,
-      projectId,
-      subprojectId,
-      workflowitemId,
-      isLoading,
-      getUserDisplayname
-    } = this.props;
-    return (
+const WorkflowitemHistoryTab = ({
+  users,
+  nEventsTotal,
+  events,
+  fetchFirstWorkflowitemHistoryPage,
+  fetchNextWorkflowitemHistoryPage,
+  currentHistoryPage,
+  lastHistoryPage,
+  projectId,
+  subprojectId,
+  workflowitemId,
+  isLoading,
+  getUserDisplayname
+}) => {
+  const workflowitemEventTypes = getWorkflowitemEventTypes();
+  const [{ startAt, endAt, publisher, eventType }] = useHistoryState();
+  return (
+    <>
+      <ExpansionPanel data-test="search-history">
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <SearchIcon />
+          <Typography>{strings.common.search}</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <HistorySearch
+            fetchFirstHistoryEvents={filter =>
+              fetchFirstWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId, filter)
+            }
+            users={users}
+            eventTypes={workflowitemEventTypes}
+          />
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
       <ScrollingHistory
-        events={historyItems}
+        events={events}
         nEventsTotal={nEventsTotal}
         hasMore={currentHistoryPage < lastHistoryPage}
         isLoading={isLoading}
         getUserDisplayname={getUserDisplayname}
-        fetchNext={() => fetchNextWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId)}
-        initialLoad={true}
+        fetchNext={() =>
+          fetchNextWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId, {
+            startAt,
+            endAt,
+            publisher,
+            eventType
+          })
+        }
       />
-    );
-  }
-}
+    </>
+  );
+};
 
 function mapStateToProps(state) {
   return {
-    historyItems: state.getIn(["workflowitemDetails", "historyItems"]),
+    users: state.getIn(["login", "user"]),
+    events: state.getIn(["workflowitemDetails", "historyItems"]),
     nEventsTotal: state.getIn(["workflowitemDetails", "totalHistoryItemCount"]),
     isLoading: state.getIn(["workflowitemDetails", "isHistoryLoading"]),
     currentHistoryPage: state.getIn(["workflowitemDetails", "currentHistoryPage"]),
@@ -48,9 +82,14 @@ function mapStateToProps(state) {
   };
 }
 
-const mapDispatchToProps = {
-  fetchNextWorkflowitemHistoryPage,
-  resetWorkflowitemHistory
-};
+function mapDispatchToProps(dispatch) {
+  return {
+    resetWorkflowitemHistory: () => dispatch(resetWorkflowitemHistory()),
+    fetchNextWorkflowitemHistoryPage: (projectId, subprojectId, workflowitemId, filter) =>
+      dispatch(fetchNextWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId, filter)),
+    fetchFirstWorkflowitemHistoryPage: (projectId, subprojectId, workflowitemId, filter) =>
+      dispatch(fetchFirstWorkflowitemHistoryPage(projectId, subprojectId, workflowitemId, filter))
+  };
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(toJS(WorkflowitemHistoryTab));

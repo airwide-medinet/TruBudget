@@ -18,6 +18,8 @@ import {
   FETCH_ALL_SUBPROJECT_DETAILS_SUCCESS,
   FETCH_NEXT_SUBPROJECT_HISTORY_PAGE,
   FETCH_NEXT_SUBPROJECT_HISTORY_PAGE_SUCCESS,
+  FETCH_FIRST_SUBPROJECT_HISTORY_PAGE,
+  FETCH_FIRST_SUBPROJECT_HISTORY_PAGE_SUCCESS,
   FETCH_WORKFLOWITEM_PERMISSIONS,
   FETCH_WORKFLOWITEM_PERMISSIONS_SUCCESS,
   GRANT_WORKFLOWITEM_PERMISSION_SUCCESS,
@@ -391,6 +393,14 @@ export default function detailviewReducer(state = defaultState, action) {
     case FETCH_NEXT_SUBPROJECT_HISTORY_PAGE_SUCCESS:
       return state.merge({
         historyItems: state.get("historyItems").concat(fromJS(action.events).reverse()),
+        currentHistoryPage: action.currentHistoryPage,
+        isHistoryLoading: false
+      });
+    case FETCH_FIRST_SUBPROJECT_HISTORY_PAGE:
+      return state.set("isHistoryLoading", true);
+    case FETCH_FIRST_SUBPROJECT_HISTORY_PAGE_SUCCESS:
+      return state.merge({
+        historyItems: fromJS(action.events).reverse(),
         currentHistoryPage: action.currentHistoryPage,
         isHistoryLoading: false
       });

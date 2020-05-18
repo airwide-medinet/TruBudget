@@ -19,6 +19,8 @@ import strings from "../../localizeStrings";
 import DocumentOverviewContainer from "../Documents/DocumentOverviewContainer";
 import WorkflowitemHistoryTab from "./WorkflowitemHistoryTab/WorkflowHistoryTab";
 
+import useHistoryState from "../Common/History/historyHook";
+
 const styles = {
   textfield: {
     width: "50%",
@@ -136,16 +138,20 @@ function WorkflowDetails({
   subProjectId: subprojectId
 }) {
   const [selectedTab, setSelectedTab] = useState(0);
-  useEffect(
-    () => {
-      if (!showWorkflowDetails) {
-        setSelectedTab(0);
-      }
-    },
-    [showWorkflowDetails]
-  );
+  useEffect(() => {
+    if (!showWorkflowDetails) {
+      setSelectedTab(0);
+    }
+  }, [showWorkflowDetails]);
+
+  const [, , clearState] = useHistoryState();
 
   const workflowitem = getWorkflowItem(workflowItems, showWorkflowDetails, showDetailsItemId);
+
+  const onWorkflowdetailsClose = () => {
+    clearState();
+    hideWorkflowDetails();
+  };
 
   let content;
   if (selectedTab === 0) {
@@ -176,7 +182,9 @@ function WorkflowDetails({
         {content}
       </DialogContent>
       <DialogActions>
-        <Button onClick={hideWorkflowDetails}>{strings.common.close}</Button>
+        <Button data-test="workflowdetails-close" onClick={onWorkflowdetailsClose}>
+          {strings.common.close}
+        </Button>
       </DialogActions>
     </Dialog>
   );

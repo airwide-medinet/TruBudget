@@ -3,6 +3,8 @@ import { CLOSE_WORKFLOWITEM_DETAILS } from "../actions";
 import {
   FETCH_NEXT_WORKFLOWITEM_HISTORY_PAGE,
   FETCH_NEXT_WORKFLOWITEM_HISTORY_PAGE_SUCCESS,
+  FETCH_FIRST_WORKFLOWITEM_HISTORY_PAGE,
+  FETCH_FIRST_WORKFLOWITEM_HISTORY_PAGE_SUCCESS,
   RESET_WORKFLOWITEM_HISTORY,
   SET_TOTAL_WORKFLOWITEM_HISTORY_ITEM_COUNT
 } from "./actions";
@@ -20,14 +22,14 @@ const defaultState = fromJS({
 
 export default function reducer(state = defaultState, action) {
   switch (action.type) {
-    case FETCH_NEXT_WORKFLOWITEM_HISTORY_PAGE:
-      return state.set("isHistoryLoading", true);
-
     case SET_TOTAL_WORKFLOWITEM_HISTORY_ITEM_COUNT:
       return state.merge({
         totalHistoryItemCount: action.totalHistoryItemsCount,
         lastHistoryPage: action.lastHistoryPage
       });
+
+    case FETCH_NEXT_WORKFLOWITEM_HISTORY_PAGE:
+      return state.set("isHistoryLoading", true);
 
     case FETCH_NEXT_WORKFLOWITEM_HISTORY_PAGE_SUCCESS:
       return state.merge({
@@ -35,6 +37,17 @@ export default function reducer(state = defaultState, action) {
         currentHistoryPage: action.currentHistoryPage,
         isHistoryLoading: false
       });
+
+    case FETCH_FIRST_WORKFLOWITEM_HISTORY_PAGE:
+      return state.set("isHistoryLoading", true);
+
+    case FETCH_FIRST_WORKFLOWITEM_HISTORY_PAGE_SUCCESS:
+      return state.merge({
+        historyItems: fromJS(action.events).reverse(),
+        currentHistoryPage: action.currentHistoryPage,
+        isHistoryLoading: false
+      });
+
     case RESET_WORKFLOWITEM_HISTORY:
     case CLOSE_WORKFLOWITEM_DETAILS:
       return defaultState;

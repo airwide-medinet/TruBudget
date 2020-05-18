@@ -35,6 +35,8 @@ export const SET_HISTORY_OFFSET = "SET_HISTORY_OFFSET";
 export const SET_TOTAL_PROJECT_HISTORY_ITEM_COUNT = "SET_TOTAL_PROJECT_HISTORY_ITEM_COUNT";
 export const FETCH_NEXT_PROJECT_HISTORY_PAGE = "FETCH_NEXT_PROJECT_HISTORY_PAGE";
 export const FETCH_NEXT_PROJECT_HISTORY_PAGE_SUCCESS = "FETCH_NEXT_PROJECT_HISTORY_PAGE_SUCCESS";
+export const FETCH_FIRST_PROJECT_HISTORY_PAGE = "FETCH_FIRST_PROJECT_HISTORY_PAGE";
+export const FETCH_FIRST_PROJECT_HISTORY_PAGE_SUCCESS = "FETCH_FIRST_PROJECT_HISTORY_PAGE_SUCCESS";
 
 export const CLOSE_PROJECT = "CLOSE_PROJECT";
 export const CLOSE_PROJECT_SUCCESS = "CLOSE_PROJECT_SUCCESS";
@@ -65,6 +67,12 @@ export const SUBPROJECT_SEARCH_BAR_DISPLAYED = "SUBPROJECT_SEARCH_BAR_DISPLAYED"
 export const SUBPROJECT_STORE_FILTERED_PROJECTS = "SUBPROJECT_STORE_FILTERED_PROJECTS";
 export const SUBPROJECT_STORE_HIGHLIGHTING_REGEX = "SUBPROJECT_STORE_HIGHLIGHTING_REGEX";
 export const SUBPROJECT_STORE_SEARCH_TERMS_AS_ARRAY = "SUBPROJECT_STORE_SEARCH_TERMS_AS_ARRAY";
+
+export const SUBPROJECTS_STORE_HISTORY_START_DATE = "SUBPROJECTS_STORE_HISTORY_START_DATE";
+export const SUBPROJECTS_STORE_HISTORY_END_DATE = "SUBPROJECTS_STORE_HISTORY_END_DATE";
+export const SUBPROJECTS_STORE_HISTORY_SEARCH_NAME = "SUBPROJECTS_STORE_HISTORY_SEARCH_NAME";
+
+export const SUBPROJECTS_RESET_HISTORY = "SUBPROJECTS_RESET_HISTORY";
 
 export function fetchSubProjectPermissions(projectId, subprojectId, showLoading = false) {
   return {
@@ -136,10 +144,20 @@ export function setTotalHistoryItemCount(count) {
   };
 }
 
-export function fetchNextProjectHistoryPage(projectId, showLoading = false) {
+export function fetchNextProjectHistoryPage(projectId, filter = {}, showLoading = false) {
   return {
     type: FETCH_NEXT_PROJECT_HISTORY_PAGE,
     projectId,
+    filter,
+    showLoading
+  };
+}
+
+export function fetchFirstProjectHistoryPage(projectId, filter = {}, showLoading = false) {
+  return {
+    type: FETCH_FIRST_PROJECT_HISTORY_PAGE,
+    projectId,
+    filter,
     showLoading
   };
 }
@@ -346,5 +364,30 @@ export function storeSubSearchTermArray(searchTerms) {
   return {
     type: SUBPROJECT_STORE_SEARCH_TERMS_AS_ARRAY,
     searchTerms
+  };
+}
+
+export function storeSubSearchHistoryStartDate(searchHistoryStartDate) {
+  return {
+    type: SUBPROJECTS_STORE_HISTORY_START_DATE,
+    searchHistoryStartDate
+  };
+}
+export function storeSubSearchHistoryEndDate(searchHistoryEndDate) {
+  return {
+    type: SUBPROJECTS_STORE_HISTORY_END_DATE,
+    searchHistoryEndDate
+  };
+}
+export function storeSubHistorySearchName(searchHistoryName) {
+  return {
+    type: SUBPROJECTS_STORE_HISTORY_SEARCH_NAME,
+    searchHistoryName
+  };
+}
+
+export function resetHistory() {
+  return {
+    type: SUBPROJECTS_RESET_HISTORY
   };
 }

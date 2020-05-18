@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import { toJS } from "../../helper";
 import HistoryDrawer from "../Common/History/HistoryDrawer";
 import { hideHistory } from "../Notifications/actions";
-import { fetchNextSubprojectHistoryPage } from "../Workflows/actions";
+import { getSubprojectEventTypes } from "../Common/History/eventTypes";
+import { fetchNextSubprojectHistoryPage, fetchFirstSubprojectHistoryPage } from "../Workflows/actions";
 
 function SubprojectHistoryDrawer({
   projectId,
@@ -15,9 +16,12 @@ function SubprojectHistoryDrawer({
   isLoading,
   getUserDisplayname,
   hideHistory,
-  fetchNextSubprojectHistoryPage,
   currentHistoryPage,
-  lastHistoryPage
+  lastHistoryPage,
+  fetchNextSubprojectHistoryPage,
+  fetchFirstSubprojectHistoryPage,
+  users,
+  subprojectEventTypes = getSubprojectEventTypes()
 }) {
   return (
     <HistoryDrawer
@@ -25,16 +29,20 @@ function SubprojectHistoryDrawer({
       onClose={hideHistory}
       events={events}
       nEventsTotal={nEventsTotal}
-      fetchNext={() => fetchNextSubprojectHistoryPage(projectId, subprojectId)}
+      fetchNextHistoryEvents={filter => fetchNextSubprojectHistoryPage(projectId, subprojectId, filter)}
+      fetchFirstHistoryEvents={filter => fetchFirstSubprojectHistoryPage(projectId, subprojectId, filter)}
       hasMore={currentHistoryPage < lastHistoryPage}
       isLoading={isLoading}
       getUserDisplayname={getUserDisplayname}
+      users={users}
+      eventTypes={subprojectEventTypes}
     />
   );
 }
 
 function mapStateToProps(state) {
   return {
+    users: state.getIn(["login", "user"]),
     doShow: state.getIn(["workflow", "showHistory"]),
     events: state.getIn(["workflow", "historyItems"]),
     nEventsTotal: state.getIn(["workflow", "historyItemsCount"]),
@@ -45,9 +53,14 @@ function mapStateToProps(state) {
   };
 }
 
-const mapDispatchToProps = {
-  hideHistory,
-  fetchNextSubprojectHistoryPage
-};
+function mapDispatchToProps(dispatch) {
+  return {
+    hideHistory: () => dispatch(hideHistory()),
+    fetchNextSubprojectHistoryPage: (projectId, subprojectId, filter) =>
+      dispatch(fetchNextSubprojectHistoryPage(projectId, subprojectId, filter)),
+    fetchFirstSubprojectHistoryPage: (projectId, subprojectId, filter) =>
+      dispatch(fetchFirstSubprojectHistoryPage(projectId, subprojectId, filter))
+  };
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(toJS(SubprojectHistoryDrawer));

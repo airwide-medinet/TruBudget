@@ -132,6 +132,7 @@ class SubProjectContainer extends Component {
                 subProjects={this.props.filteredSubProjects}
                 highlightingRegex={this.props.highlightingRegex}
                 isDataLoading={this.props.isDataLoading}
+                idsPermissionsUnassigned={this.props.idsPermissionsUnassigned}
               />
             </div>
           )}
